@@ -1,0 +1,22 @@
+{
+  "name": "@medonivo/worker",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Proprietary",
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@medonivo/shared-types": "workspace:*",
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "@medonivo/typescript-config": "workspace:*",
+    "@types/node": "^20.11.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.3"
+  }
+}

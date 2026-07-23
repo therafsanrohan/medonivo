@@ -1,0 +1,11 @@
+module.exports = {
+  extends: ["eslint:recommended"],
+  rules: {
+    "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+    "no-unused-vars": "off"
+  },
+  env: {
+    node: true,
+    es2022: true
+  }
+};

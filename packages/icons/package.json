@@ -1,0 +1,21 @@
+{
+  "name": "@medonivo/icons",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Proprietary",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@medonivo/typescript-config": "workspace:*",
+    "@types/react": "^18.2.66",
+    "typescript": "^5.4.3"
+  }
+}
