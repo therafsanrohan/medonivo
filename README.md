@@ -2,31 +2,39 @@
 
 The Intelligent Healthcare Platform — A multi-tenant, subscription-based cloud healthcare operating system designed for hospitals, clinics, diagnostic centers, patients, and families.
 
-## Applications
+## Branch & Phase Status
+
+Current Active Branch: `chore/foundation-hardening` (Foundation Hardening & Architecture Cleanup Phase)
+
+## Monorepo Layout
 
 - `apps/care` - Patient & Family Mobile/Web App (Port 3000)
-- `apps/workspace` - Hospital Staff & Practitioner Operations App (Port 3001)
+- `apps/workspace` - Hospital Staff & Practitioner Operations Workspace (Port 3001)
 - `apps/control` - Medonivo Platform Super Admin Control App (Port 3002)
 - `apps/api` - NestJS Modular Monolith API Server (Port 4000)
 - `apps/worker` - Background Job Processor (BullMQ / Redis)
 
 ## Core Packages
 
-- `packages/ui` - Healthcare Design System (Helvetica Neue typography, calm status colors, responsive accessible components)
+- `packages/ui` - Healthcare Design System Components
 - `packages/design-tokens` - Color tokens, typography, shadows, breakpoints
-- `packages/shared-types` - Shared domain interfaces and enums
-- `packages/validation` - Zod schemas for input validation
-- `packages/auth` - Authentication & RBAC guard utilities
+- `packages/icons` - Minimal healthcare line icons
+- `packages/shared-types` - Shared domain interfaces & enums
+- `packages/validation` - Zod schemas for input & environment validation
+- `packages/auth` - Authentication & normalized RBAC guard utilities
 - `packages/contracts` - API Request/Response contracts
 - `packages/api-client` - Typed HTTP client wrapper
-- `packages/icons` - Minimal healthcare line icons
 - `packages/testing` - Unit & integration test helpers
 
-## Prerequisites
+## Architecture Decision Records (ADRs)
 
-- Node.js >= 18.0.0
-- pnpm >= 8.0.0
-- Docker & Docker Compose (for PostgreSQL & Redis)
+Key architectural decisions are documented in `docs/decisions/`:
+- [ADR 0001: Modular Monolith Architecture](docs/decisions/0001-modular-monolith.md)
+- [ADR 0002: Monorepo Structure with Turborepo & pnpm](docs/decisions/0002-monorepo-structure.md)
+- [ADR 0003: Normalized Role-Based Access Control (RBAC) Schema](docs/decisions/0003-normalized-rbac.md)
+- [ADR 0004: Multi-Tenant Data Isolation Strategy](docs/decisions/0004-tenant-isolation.md)
+- [ADR 0005: Environment-Aware OpenAPI Swagger Protection](docs/decisions/0005-environment-swagger.md)
+- [ADR 0006: Append-Only Architectural Policy for Clinical & Financial Records](docs/decisions/0006-append-only-records.md)
 
 ## Getting Started
 
@@ -40,33 +48,23 @@ The Intelligent Healthcare Platform — A multi-tenant, subscription-based cloud
    docker-compose up -d
    ```
 
-3. Install dependencies:
+3. Generate Prisma ORM database client:
    ```bash
-   pnpm install
+   pnpm --filter @medonivo/api db:generate
    ```
 
-4. Run database migrations:
-   ```bash
-   pnpm --filter @medonivo/api db:migrate
-   ```
-
-5. Start local development environment:
+4. Start local development environment:
    ```bash
    pnpm run dev
    ```
 
 ## Development Commands
 
-- `pnpm run build` - Build all apps and packages
-- `pnpm run dev` - Run all applications in development mode
-- `pnpm run lint` - Run ESLint across monorepo
-- `pnpm run check-types` - Run TypeScript compiler checks
-- `pnpm run test` - Run Vitest unit & integration tests
+- `pnpm run check-types` - Run TypeScript compiler checks across monorepo
+- `pnpm run lint` - Run ESLint across all apps and packages
+- `pnpm run test` - Run unit & integration test suite
+- `pnpm run build` - Build all applications and packages
 
-## Security & Compliance
+## Licensing
 
-Medonivo Health OS treats healthcare data security as a first-class requirement. Refer to [SECURITY.md](SECURITY.md) for details on multi-tenant isolation, audit logs, and security guidelines.
-
-## License
-
-Proprietary, All Rights Reserved.
+Proprietary, All Rights Reserved. See [LICENSE](LICENSE) for details.

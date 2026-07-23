@@ -14,7 +14,7 @@ describe('HealthController', () => {
     mockRedis = {
       getClient: jest.fn().mockReturnValue({
         ping: jest.fn().mockResolvedValue('PONG')
-      } as any)
+      } as unknown as ReturnType<RedisService['getClient']>)
     };
 
     controller = new HealthController(

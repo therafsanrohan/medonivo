@@ -1,16 +1,13 @@
 # Security & Compliance Policy - Medonivo Health OS
 
-## Overview
+## Security Architecture Controls
 
-Medonivo Health OS processes sensitive patient, medical, and financial data. Security controls are enforced at all architectural layers.
-
-## Key Security Controls
-
-1. **Tenant Isolation**: Every entity contains `tenantId` and `organizationId`. Context is resolved directly from authenticated JWT sessions—never trusted from client query or body payloads.
-2. **Audit Logging**: Sensitive operations (patient read/write, report approval/release, payment adjustments, role escalation) generate immutable audit records.
-3. **Data Protection**: Sensitive parameters (passwords, OTPs, auth tokens, medical reports, financial tokens) are strictly excluded from server logs.
-4. **Least Privilege**: Role-based (RBAC) and branch-level access control are enforced on every API route and server action.
+1. **Strict Multi-Tenant Isolation**: Every database entity includes `tenantId` and `organizationId`. Multi-tenant context is resolved directly from authenticated JWT sessions—never trusted from client query or body payloads.
+2. **Normalized Role-Based Access Control (RBAC)**: Fine-grained permissions (`module:action`) are assigned to normalized roles and scoped by tenant and branch.
+3. **Field Sanitization & Audit Logging**: Sensitive fields (passwords, tokens, OTPs, credentials, national identity numbers) are strictly redacted before writing to security audit logs.
+4. **Environment Hardening & Helmet**: HTTP security headers (Helmet), explicit CORS origin allowlists, request throttling (`ThrottlerModule`), and request IDs (`X-Request-ID`) are enforced on API entry points.
+5. **OpenAPI Protection**: OpenAPI Swagger documentation is protected and disabled in production environments.
 
 ## Vulnerability Reporting
 
-If you identify a security vulnerability, report it directly to `security@medonivo.com`. Do not create public issues for security vulnerabilities.
+Report security vulnerabilities directly to `security@medonivo.com`. Do not disclose security vulnerabilities publicly.

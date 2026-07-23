@@ -7,6 +7,33 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum TenantStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum StaffStatus {
+  ACTIVE
+  ON_LEAVE
+  TERMINATED
+  SUSPENDED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+enum IdentityType {
+  EMAIL_PASSWORD
+  PHONE_OTP
+  GOOGLE
+  SAML_SSO
+}
+
 model Tenant {
   id            String         @id @default(uuid())
   name          String
@@ -16,13 +43,10 @@ model Tenant {
   updatedAt     DateTime       @updatedAt
   organizations Organization[]
   users         User[]
+  userRoles     UserRole[]
   auditLogs     AuditLog[]
-}
 
-enum TenantStatus {
-  PENDING
-  ACTIVE
-  SUSPENDED
+  @@index([slug, status])
 }
 
 model Organization {
@@ -30,42 +54,248 @@ model Organization {
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name      String
-  code      String   @unique
+  code      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   branches  Branch[]
+  userRoles UserRole[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
 }
 
 model Branch {
-  id             String       @id @default(uuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  name           String
-  code           String
-  address        String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id                String              @id @default(uuid())
+  organizationId    String
+  organization      Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name              String
+  code              String
+  address           String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  departments       Department[]
+  staffBranchAccess StaffBranchAccess[]
+  userRoles         UserRole[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}
+
+model Department {
+  id            String         @id @default(uuid())
+  branchId      String
+  branch        Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  name          String
+  code          String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  staffProfiles StaffProfile[]
+
+  @@unique([branchId, code])
+  @@index([branchId])
 }
 
 model User {
-  id          String   @id @default(uuid())
-  tenantId    String?
-  tenant      Tenant?  @relation(fields: [tenantId], references: [id])
-  email       String?  @unique
-  phoneNumber String?  @unique
-  password    String?
-  fullName    String
-  roles       String[] @default(["PATIENT"])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 String              @id @default(uuid())
+  tenantId           String?
+  tenant             Tenant?             @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  email              String?
+  phoneNumber        String?
+  fullName           String
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  passwordCredential PasswordCredential?
+  identities         UserIdentity[]
+  sessions           Session[]
+  deviceSessions     DeviceSession[]
+  userRoles          UserRole[]
+  staffProfile       StaffProfile?
+  auditLogs          AuditLog[]
+
+  @@unique([tenantId, email])
+  @@unique([tenantId, phoneNumber])
+  @@index([tenantId])
+}
+
+model PasswordCredential {
+  id                String    @id @default(uuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passwordHash      String
+  algorithm         String    @default("bcrypt")
+  salt              String?
+  passwordChangedAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model UserIdentity {
+  id           String       @id @default(uuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  identityType IdentityType
+  providerId   String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([identityType, providerId])
+  @@index([userId])
+}
+
+model Session {
+  id           String        @id @default(uuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String        @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  device       DeviceSession? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+  deviceId     String?
+
+  @@index([userId, revokedAt])
+}
+
+model DeviceSession {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceId   String
+  deviceName String?
+  ipAddress  String?
+  userAgent  String?
+  lastActive DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  sessions   Session[]
+
+  @@unique([userId, deviceId])
+  @@index([userId])
+}
+
+model Role {
+  id              String           @id @default(uuid())
+  code            String           @unique
+  name            String
+  description     String?
+  isSystemRole    Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+  invitations     StaffInvitation[]
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  code            String           @unique
+  module          String
+  action          String
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+
+  @@index([module, action])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+}
+
+model UserRole {
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId         String
+  role           Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  tenantId       String?
+  tenant         Tenant?       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String?
+  branch         Branch?       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([userId, roleId, tenantId, branchId])
+  @@index([userId, tenantId])
+}
+
+model StaffProfile {
+  id                String              @id @default(uuid())
+  userId            String              @unique
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  staffCode         String
+  designation       String?
+  departmentId      String?
+  department        Department?         @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  status            StaffStatus         @default(ACTIVE)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  staffBranchAccess StaffBranchAccess[]
+
+  @@index([staffCode, status])
+}
+
+model StaffBranchAccess {
+  id             String       @id @default(uuid())
+  staffProfileId String
+  staffProfile   StaffProfile @relation(fields: [staffProfileId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  isPrimary      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@unique([staffProfileId, branchId])
+}
+
+model StaffInvitation {
+  id          String           @id @default(uuid())
+  tenantId    String
+  email       String
+  phoneNumber String?
+  roleId      String
+  role        Role             @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  token       String           @unique
+  status      InvitationStatus @default(PENDING)
+  expiresAt   DateTime
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([tenantId, email, token])
+}
+
+model LoginAttempt {
+  id            String   @id @default(uuid())
+  identifier    String
+  ipAddress     String?
+  userAgent     String?
+  success       Boolean
+  failureReason String?
+  attemptedAt   DateTime @default(now())
+
+  @@index([identifier, attemptedAt])
 }
 
 model AuditLog {
   id             String   @id @default(uuid())
   tenantId       String?
-  tenant         Tenant?  @relation(fields: [tenantId], references: [id])
+  tenant         Tenant?  @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   organizationId String?
   userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   action         String
   entityName     String
   entityId       String
@@ -73,4 +303,7 @@ model AuditLog {
   userAgent      String?
   details        Json?
   createdAt      DateTime @default(now())
+
+  @@index([tenantId, action])
+  @@index([entityName, entityId])
 }

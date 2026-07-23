@@ -1,28 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, Button, StatusBadge } from '@medonivo/ui';
 import { CalendarIcon, FileTextIcon, ShieldCheckIcon, UserIcon } from '@medonivo/icons';
+import { mockCareUser, mockUpcomingAppointments } from '../fixtures/dev-fixtures';
 
 export default function CareHomePage() {
-  const [activeTab] = useState('upcoming');
-
   return (
     <div style={{ padding: '20px' }}>
-      {/* Welcome Hero */}
+      {/* CarePass Status Hero */}
       <Card style={{ backgroundColor: '#075985', color: '#FFFFFF', border: 'none', marginBottom: '24px' }}>
         <span style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.9, fontWeight: 600 }}>
-          CarePass Active
+          {mockCareUser.carePassPlan}
         </span>
         <h1 style={{ fontSize: '22px', fontWeight: 700, margin: '6px 0 8px 0', letterSpacing: '-0.3px' }}>
-          Welcome back, Patient Family
+          Welcome back, {mockCareUser.name}
         </h1>
         <p style={{ fontSize: '14px', opacity: 0.9, margin: 0, lineHeight: '1.4' }}>
-          Your digital health pass includes 2 free doctor consultations and 15% discount on diagnostic test bookings this month.
+          Your digital health pass includes {mockCareUser.includedConsultations} free doctor consultations and {mockCareUser.diagnosticDiscountPercent}% discount on diagnostic test bookings this month.
         </p>
       </Card>
 
-      {/* Quick Action Grid */}
+      {/* Quick Healthcare Action Grid */}
       <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#1E293B', marginBottom: '12px' }}>
         Quick Healthcare Actions
       </h2>
@@ -56,7 +55,7 @@ export default function CareHomePage() {
         </Card>
       </div>
 
-      {/* Recent Activity / Active Queue */}
+      {/* Active Appointments & Queue */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#1E293B', margin: 0 }}>
           Appointments &amp; Queue Status
@@ -64,24 +63,24 @@ export default function CareHomePage() {
         <span style={{ fontSize: '12px', color: '#0369A1', fontWeight: 500 }}>View History</span>
       </div>
 
-      {activeTab === 'upcoming' && (
-        <Card style={{ marginBottom: '16px' }}>
+      {mockUpcomingAppointments.map((apt) => (
+        <Card key={apt.id} style={{ marginBottom: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
             <div>
-              <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#0F172A', margin: 0 }}>Dr. Arman Hossain</h3>
-              <span style={{ fontSize: '13px', color: '#64748B' }}>Cardiology — Central Dhaka Branch</span>
+              <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#0F172A', margin: 0 }}>{apt.doctorName}</h3>
+              <span style={{ fontSize: '13px', color: '#64748B' }}>{apt.specialty} - {apt.branchName}</span>
             </div>
-            <StatusBadge status="info" label="Token #A-14" />
+            <StatusBadge status="info" label={`Token #${apt.queueToken}`} />
           </div>
           <p style={{ fontSize: '13px', color: '#475569', margin: '8px 0 12px 0' }}>
-            Today at 04:30 PM (Estimated wait time: ~15 mins)
+            {apt.appointmentTime} (Estimated wait time: ~{apt.estimatedWaitMinutes} mins)
           </p>
           <div style={{ display: 'flex', gap: '8px' }}>
             <Button variant="outline" size="sm">Digital Check-in</Button>
             <Button variant="ghost" size="sm">Reschedule</Button>
           </div>
         </Card>
-      )}
+      ))}
     </div>
   );
 }

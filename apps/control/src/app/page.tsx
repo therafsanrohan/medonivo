@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Card, Button, StatusBadge } from '@medonivo/ui';
+import { mockControlMetrics, mockControlTenants } from '../fixtures/dev-fixtures';
 
 export default function ControlDashboardPage() {
   return (
@@ -19,30 +20,36 @@ export default function ControlDashboardPage() {
         <Button variant="primary">+ Onboard New Hospital Tenant</Button>
       </div>
 
-      {/* Stats row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <Card style={{ backgroundColor: '#1E293B', borderColor: '#334155', color: '#FFFFFF' }}>
           <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>Active Hospital Tenants</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#38BDF8', marginTop: '4px' }}>14</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#38BDF8', marginTop: '4px' }}>
+            {mockControlMetrics.activeTenants}
+          </div>
         </Card>
 
         <Card style={{ backgroundColor: '#1E293B', borderColor: '#334155', color: '#FFFFFF' }}>
           <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>Active Hospital Branches</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF', marginTop: '4px' }}>42</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF', marginTop: '4px' }}>
+            {mockControlMetrics.activeBranches}
+          </div>
         </Card>
 
         <Card style={{ backgroundColor: '#1E293B', borderColor: '#334155', color: '#FFFFFF' }}>
           <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>Total CarePass Members</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#4ADE80', marginTop: '4px' }}>8,420</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#4ADE80', marginTop: '4px' }}>
+            {mockControlMetrics.carePassMembers.toLocaleString()}
+          </div>
         </Card>
 
         <Card style={{ backgroundColor: '#1E293B', borderColor: '#334155', color: '#FFFFFF' }}>
           <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>SaaS Monthly Recurring (MRR)</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#FACC15', marginTop: '4px' }}>BDT 1,420,000</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#FACC15', marginTop: '4px' }}>
+            {mockControlMetrics.monthlyRecurringRevenueBDT}
+          </div>
         </Card>
       </div>
 
-      {/* Tenants Table */}
       <Card style={{ backgroundColor: '#1E293B', borderColor: '#334155', padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #334155', backgroundColor: '#0F172A', fontWeight: 600, fontSize: '14px', color: '#F8FAFC' }}>
           Registered Hospital Tenants &amp; Subscriptions
@@ -59,25 +66,19 @@ export default function ControlDashboardPage() {
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderBottom: '1px solid #334155' }}>
-              <td style={{ padding: '14px 20px', fontWeight: 600 }}>Square Hospitals Ltd.</td>
-              <td style={{ padding: '14px 20px', color: '#94A3B8' }}>4 Branches</td>
-              <td style={{ padding: '14px 20px', color: '#38BDF8' }}>Enterprise Cloud</td>
-              <td style={{ padding: '14px 20px' }}><StatusBadge status="success" label="Verified Active" /></td>
-              <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                <Button size="sm" variant="outline">Manage Tenant</Button>
-              </td>
-            </tr>
-
-            <tr style={{ borderBottom: '1px solid #334155' }}>
-              <td style={{ padding: '14px 20px', fontWeight: 600 }}>Evercare Healthcare Network</td>
-              <td style={{ padding: '14px 20px', color: '#94A3B8' }}>6 Branches</td>
-              <td style={{ padding: '14px 20px', color: '#38BDF8' }}>Enterprise Cloud</td>
-              <td style={{ padding: '14px 20px' }}><StatusBadge status="success" label="Verified Active" /></td>
-              <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                <Button size="sm" variant="outline">Manage Tenant</Button>
-              </td>
-            </tr>
+            {mockControlTenants.map((tenant) => (
+              <tr key={tenant.id} style={{ borderBottom: '1px solid #334155' }}>
+                <td style={{ padding: '14px 20px', fontWeight: 600 }}>{tenant.name}</td>
+                <td style={{ padding: '14px 20px', color: '#94A3B8' }}>{tenant.branchesCount} Branches</td>
+                <td style={{ padding: '14px 20px', color: '#38BDF8' }}>{tenant.saasPlan}</td>
+                <td style={{ padding: '14px 20px' }}>
+                  <StatusBadge status="success" label={tenant.statusLabel} />
+                </td>
+                <td style={{ padding: '14px 20px', textAlign: 'right' }}>
+                  <Button size="sm" variant="outline">Manage Tenant</Button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </Card>

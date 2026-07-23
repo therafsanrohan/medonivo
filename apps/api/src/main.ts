@@ -1,16 +1,36 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 
+export function parseCorsOrigins(allowedOriginsStr?: string): (string | RegExp)[] {
+  if (!allowedOriginsStr) {
+    return ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
+  }
+  return allowedOriginsStr.split(',').map((origin) => origin.trim()).filter(Boolean);
+}
+
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
+  app.enableShutdownHooks();
+  app.use(helmet());
+
+  const allowedOrigins = parseCorsOrigins(process.env.CORS_ALLOWED_ORIGINS);
   app.enableCors({
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        logger.warn(`CORS blocked request from origin: ${origin}`);
+        callback(new Error('CORS policy origin not allowed'));
+      }
+    },
     credentials: true
   });
 
@@ -30,19 +50,28 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor(), new AuditInterceptor());
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Medonivo Health OS API')
-    .setDescription('Multi-tenant cloud healthcare platform REST API contract & endpoints')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  const swaggerEnabled = process.env.SWAGGER_ENABLED === 'true' || process.env.NODE_ENV === 'development';
+  if (swaggerEnabled) {
+    const swaggerPath = process.env.SWAGGER_PATH || '/docs';
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Medonivo Health OS API')
+      .setDescription('Multi-tenant cloud healthcare platform REST API contract & endpoints')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('docs', app, document);
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup(swaggerPath, app, document);
+    logger.log(`OpenAPI Swagger documentation available at ${swaggerPath}`);
+  } else {
+    logger.log('OpenAPI Swagger documentation is disabled in production environment');
+  }
 
   const port = Number(process.env.PORT) || 4000;
   await app.listen(port);
-  console.info(`Medonivo API running on port ${port} (OpenAPI Swagger at http://localhost:${port}/docs)`);
+  logger.log(`Medonivo Backend API server running on port ${port}`);
 }
 
-bootstrap();
+if (require.main === module || process.env.NODE_ENV !== 'test') {
+  bootstrap();
+}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Card, Button, StatusBadge, Input } from '@medonivo/ui';
+import { mockWorkspaceMetrics, mockQueueList } from '../fixtures/dev-fixtures';
 
 export default function WorkspaceDashboardPage() {
   return (
@@ -25,22 +26,30 @@ export default function WorkspaceDashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <Card>
           <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>{"Today's Total Appointments"}</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', marginTop: '4px' }}>48</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', marginTop: '4px' }}>
+            {mockWorkspaceMetrics.totalAppointments}
+          </div>
         </Card>
 
         <Card>
           <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>Active Waiting Queue</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#0369A1', marginTop: '4px' }}>12</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#0369A1', marginTop: '4px' }}>
+            {mockWorkspaceMetrics.activeWaitingQueue}
+          </div>
         </Card>
 
         <Card>
           <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>Completed Consultations</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#166534', marginTop: '4px' }}>29</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#166534', marginTop: '4px' }}>
+            {mockWorkspaceMetrics.completedConsultations}
+          </div>
         </Card>
 
         <Card>
           <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>CarePass Eligibility Verified</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#92400E', marginTop: '4px' }}>18</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#92400E', marginTop: '4px' }}>
+            {mockWorkspaceMetrics.carePassVerified}
+          </div>
         </Card>
       </div>
 
@@ -70,27 +79,22 @@ export default function WorkspaceDashboardPage() {
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-              <td style={{ padding: '14px 20px', fontWeight: 700, color: '#0369A1' }}>A-14</td>
-              <td style={{ padding: '14px 20px', fontWeight: 600, color: '#0F172A' }}>Rafsan Hasan</td>
-              <td style={{ padding: '14px 20px', color: '#64748B' }}>MRN-90218 - +8801700...</td>
-              <td style={{ padding: '14px 20px' }}><StatusBadge status="success" label="Active (Silver)" /></td>
-              <td style={{ padding: '14px 20px' }}><StatusBadge status="warning" label="Waiting in Chamber" /></td>
-              <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                <Button size="sm" variant="primary">Call Patient</Button>
-              </td>
-            </tr>
-
-            <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-              <td style={{ padding: '14px 20px', fontWeight: 700, color: '#0369A1' }}>A-15</td>
-              <td style={{ padding: '14px 20px', fontWeight: 600, color: '#0F172A' }}>Sultana Parveen</td>
-              <td style={{ padding: '14px 20px', color: '#64748B' }}>MRN-90219 - +8801800...</td>
-              <td style={{ padding: '14px 20px' }}><StatusBadge status="neutral" label="Non-Member" /></td>
-              <td style={{ padding: '14px 20px' }}><StatusBadge status="info" label="Checked In" /></td>
-              <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                <Button size="sm" variant="outline">Prepare Vitals</Button>
-              </td>
-            </tr>
+            {mockQueueList.map((item) => (
+              <tr key={item.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                <td style={{ padding: '14px 20px', fontWeight: 700, color: '#0369A1' }}>{item.token}</td>
+                <td style={{ padding: '14px 20px', fontWeight: 600, color: '#0F172A' }}>{item.patientName}</td>
+                <td style={{ padding: '14px 20px', color: '#64748B' }}>{item.mrnPhone}</td>
+                <td style={{ padding: '14px 20px' }}>
+                  <StatusBadge status={item.carePassStatus} label={item.carePassLabel} />
+                </td>
+                <td style={{ padding: '14px 20px' }}>
+                  <StatusBadge status={item.queueStatus} label={item.queueStatusLabel} />
+                </td>
+                <td style={{ padding: '14px 20px', textAlign: 'right' }}>
+                  <Button size="sm" variant="primary">Call Patient</Button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </Card>
