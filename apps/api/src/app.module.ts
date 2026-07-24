@@ -4,6 +4,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './database/database.module';
 import { RedisModule } from './redis/redis.module';
 import { HealthModule } from './modules/health/health.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { OrganizationModule } from './modules/organization/organization.module';
+import { PatientModule } from './modules/patient/patient.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -14,7 +17,10 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     }]),
     DatabaseModule,
     RedisModule,
-    HealthModule
+    HealthModule,
+    AuthModule,
+    OrganizationModule,
+    PatientModule
   ],
   providers: [
     {

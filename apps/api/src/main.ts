@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
+import { validateEnv } from './config/env.config';
 
 export function parseCorsOrigins(allowedOriginsStr?: string): (string | RegExp)[] {
   if (!allowedOriginsStr) {
@@ -15,6 +16,7 @@ export function parseCorsOrigins(allowedOriginsStr?: string): (string | RegExp)[
 }
 
 async function bootstrap() {
+  validateEnv(process.env);
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 

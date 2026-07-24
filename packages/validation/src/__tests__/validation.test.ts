@@ -8,7 +8,8 @@ describe('Validation Schemas', () => {
       DATABASE_URL: 'postgresql://medonivo:medonivopass@localhost:5432/medonivo_db',
       REDIS_HOST: 'localhost',
       REDIS_PORT: '6379',
-      JWT_SECRET: 'super-secret-jwt-key-medonivo-platform-dev-2026'
+      JWT_ACCESS_SECRET: 'super-secret-jwt-access-token-key-2026',
+      JWT_REFRESH_SECRET: 'super-secret-jwt-refresh-token-key-2026'
     };
 
     const parsed = envSchema.safeParse(validEnv);

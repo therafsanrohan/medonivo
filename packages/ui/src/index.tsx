@@ -1,7 +1,20 @@
 import React from 'react';
+import { tokens } from '@medonivo/design-tokens';
 
-// Common base styles
-const baseFontFamily = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+// Accessibility helper: Focus outline styling
+const focusOutlineStyle = `
+  button:focus-visible, input:focus-visible {
+    outline: 2px solid ${tokens.colors.brand[600]};
+    outline-offset: 2px;
+  }
+`;
+
+// Inject focus styles globally on run
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.innerHTML = focusOutlineStyle;
+  document.head.appendChild(style);
+}
 
 // --- BUTTON & ICON BUTTON ---
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,26 +37,46 @@ export const Button: React.FC<ButtonProps> = ({
   const getVariantStyles = (): React.CSSProperties => {
     switch (variant) {
       case 'primary':
-        return { backgroundColor: '#0369A1', color: '#FFFFFF', border: '1px solid #0369A1' };
+        return {
+          backgroundColor: tokens.colors.brand[600],
+          color: '#FFFFFF',
+          border: `1px solid ${tokens.colors.brand[600]}`
+        };
       case 'secondary':
-        return { backgroundColor: '#F1F5F9', color: '#334155', border: '1px solid #CBD5E1' };
+        return {
+          backgroundColor: tokens.colors.neutral[100],
+          color: tokens.colors.neutral[700],
+          border: `1px solid ${tokens.colors.neutral[300]}`
+        };
       case 'outline':
-        return { backgroundColor: 'transparent', color: '#0369A1', border: '1px solid #0369A1' };
+        return {
+          backgroundColor: 'transparent',
+          color: tokens.colors.brand[600],
+          border: `1px solid ${tokens.colors.brand[600]}`
+        };
       case 'danger':
-        return { backgroundColor: '#DC2626', color: '#FFFFFF', border: '1px solid #DC2626' };
+        return {
+          backgroundColor: tokens.colors.status.error.text,
+          color: '#FFFFFF',
+          border: `1px solid ${tokens.colors.status.error.text}`
+        };
       case 'ghost':
-        return { backgroundColor: 'transparent', color: '#475569', border: '1px solid transparent' };
+        return {
+          backgroundColor: 'transparent',
+          color: tokens.colors.neutral[600],
+          border: '1px solid transparent'
+        };
     }
   };
 
   const getSizeStyles = (): React.CSSProperties => {
     switch (size) {
       case 'sm':
-        return { padding: '6px 12px', fontSize: '13px' };
+        return { padding: '6px 12px', fontSize: tokens.typography.fontSize.xs };
       case 'lg':
-        return { padding: '12px 24px', fontSize: '16px' };
+        return { padding: '12px 24px', fontSize: tokens.typography.fontSize.base };
       default:
-        return { padding: '9px 18px', fontSize: '14px' };
+        return { padding: '9px 18px', fontSize: tokens.typography.fontSize.sm };
     }
   };
 
@@ -51,9 +84,9 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       disabled={disabled || isLoading}
       style={{
-        fontFamily: baseFontFamily,
-        fontWeight: 500,
-        borderRadius: '6px',
+        fontFamily: tokens.typography.fontFamily,
+        fontWeight: tokens.typography.fontWeight.medium,
+        borderRadius: tokens.borderRadius.md,
         cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
         opacity: disabled || isLoading ? 0.6 : 1,
         display: 'inline-flex',
@@ -61,6 +94,7 @@ export const Button: React.FC<ButtonProps> = ({
         justifyContent: 'center',
         width: fullWidth ? '100%' : 'auto',
         transition: 'all 0.15s ease-in-out',
+        outline: 'none',
         ...getVariantStyles(),
         ...getSizeStyles(),
         ...style
@@ -81,29 +115,48 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 export const Input: React.FC<InputProps> = ({ label, error, style, id, ...props }) => {
   const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.xs, width: '100%' }}>
       {label && (
-        <label htmlFor={inputId} style={{ fontFamily: baseFontFamily, fontSize: '13px', fontWeight: 500, color: '#334155' }}>
+        <label
+          htmlFor={inputId}
+          style={{
+            fontFamily: tokens.typography.fontFamily,
+            fontSize: tokens.typography.fontSize.xs,
+            fontWeight: tokens.typography.fontWeight.medium,
+            color: tokens.colors.neutral[700]
+          }}
+        >
           {label}
         </label>
       )}
       <input
         id={inputId}
         style={{
-          fontFamily: baseFontFamily,
+          fontFamily: tokens.typography.fontFamily,
           padding: '8px 12px',
-          fontSize: '14px',
-          borderRadius: '6px',
-          border: error ? '1px solid #DC2626' : '1px solid #CBD5E1',
+          fontSize: tokens.typography.fontSize.sm,
+          borderRadius: tokens.borderRadius.md,
+          border: error ? `1px solid ${tokens.colors.status.error.text}` : `1px solid ${tokens.colors.neutral[300]}`,
           outline: 'none',
           backgroundColor: '#FFFFFF',
-          color: '#0F172A',
+          color: tokens.colors.neutral[900],
           width: '100%',
+          transition: 'border-color 0.15s ease-in-out',
           ...style
         }}
         {...props}
       />
-      {error && <span style={{ fontFamily: baseFontFamily, fontSize: '12px', color: '#DC2626' }}>{error}</span>}
+      {error && (
+        <span
+          style={{
+            fontFamily: tokens.typography.fontFamily,
+            fontSize: tokens.typography.fontSize.xs,
+            color: tokens.colors.status.error.text
+          }}
+        >
+          {error}
+        </span>
+      )}
     </div>
   );
 };
@@ -113,9 +166,9 @@ export const Card: React.FC<{ children: React.ReactNode; style?: React.CSSProper
   <div
     style={{
       backgroundColor: '#FFFFFF',
-      border: '1px solid #E2E8F0',
-      borderRadius: '8px',
-      padding: '20px',
+      border: `1px solid ${tokens.colors.neutral[200]}`,
+      borderRadius: tokens.borderRadius.lg,
+      padding: tokens.spacing.md,
       boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       ...style
     }}
@@ -134,15 +187,19 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
   const getStyles = () => {
     switch (status) {
       case 'success':
-        return { bg: '#F0FDF4', color: '#166534', border: '#BBF7D0' };
+        return tokens.colors.status.success;
       case 'warning':
-        return { bg: '#FFFBEB', color: '#92400E', border: '#FDE68A' };
+        return tokens.colors.status.warning;
       case 'error':
-        return { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' };
+        return tokens.colors.status.error;
       case 'info':
-        return { bg: '#EFF6FF', color: '#1E40AF', border: '#BFDBFE' };
+        return tokens.colors.status.info;
       default:
-        return { bg: '#F8FAFC', color: '#475569', border: '#E2E8F0' };
+        return {
+          bg: tokens.colors.neutral[50],
+          text: tokens.colors.neutral[600],
+          border: tokens.colors.neutral[200]
+        };
     }
   };
 
@@ -151,13 +208,13 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
   return (
     <span
       style={{
-        fontFamily: baseFontFamily,
-        fontSize: '12px',
-        fontWeight: 500,
+        fontFamily: tokens.typography.fontFamily,
+        fontSize: tokens.typography.fontSize.xs,
+        fontWeight: tokens.typography.fontWeight.medium,
         padding: '3px 8px',
-        borderRadius: '9999px',
+        borderRadius: tokens.borderRadius.full,
         backgroundColor: s.bg,
-        color: s.color,
+        color: s.text,
         border: `1px solid ${s.border}`,
         display: 'inline-flex',
         alignItems: 'center'
@@ -172,14 +229,14 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
 export const Skeleton: React.FC<{ height?: string; width?: string; borderRadius?: string }> = ({
   height = '20px',
   width = '100%',
-  borderRadius = '4px'
+  borderRadius = tokens.borderRadius.sm
 }) => (
   <div
     style={{
       height,
       width,
       borderRadius,
-      backgroundColor: '#E2E8F0',
+      backgroundColor: tokens.colors.neutral[200],
       animation: 'pulse 1.5s infinite ease-in-out'
     }}
   />
@@ -191,12 +248,34 @@ export const EmptyState: React.FC<{ title: string; description?: string; action?
   description,
   action
 }) => (
-  <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px dashed #CBD5E1', borderRadius: '8px' }}>
-    <h3 style={{ fontFamily: baseFontFamily, fontSize: '16px', fontWeight: 600, color: '#334155', margin: '0 0 4px 0' }}>
+  <div
+    style={{
+      textAlign: 'center',
+      padding: '40px 20px',
+      border: `1px dashed ${tokens.colors.neutral[300]}`,
+      borderRadius: tokens.borderRadius.lg
+    }}
+  >
+    <h3
+      style={{
+        fontFamily: tokens.typography.fontFamily,
+        fontSize: tokens.typography.fontSize.sm,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        color: tokens.colors.neutral[700],
+        margin: '0 0 4px 0'
+      }}
+    >
       {title}
     </h3>
     {description && (
-      <p style={{ fontFamily: baseFontFamily, fontSize: '14px', color: '#64748B', margin: '0 0 16px 0' }}>
+      <p
+        style={{
+          fontFamily: tokens.typography.fontFamily,
+          fontSize: tokens.typography.fontSize.sm,
+          color: tokens.colors.neutral[500],
+          margin: '0 0 16px 0'
+        }}
+      >
         {description}
       </p>
     )}
@@ -205,11 +284,35 @@ export const EmptyState: React.FC<{ title: string; description?: string; action?
 );
 
 export const ErrorState: React.FC<{ message: string; onRetry?: () => void }> = ({ message, onRetry }) => (
-  <div style={{ padding: '24px', backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px' }}>
-    <h4 style={{ fontFamily: baseFontFamily, fontSize: '15px', fontWeight: 600, color: '#991B1B', margin: '0 0 6px 0' }}>
+  <div
+    style={{
+      padding: '24px',
+      backgroundColor: tokens.colors.status.error.bg,
+      border: `1px solid ${tokens.colors.status.error.border}`,
+      borderRadius: tokens.borderRadius.lg
+    }}
+  >
+    <h4
+      style={{
+        fontFamily: tokens.typography.fontFamily,
+        fontSize: tokens.typography.fontSize.sm,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        color: tokens.colors.status.error.text,
+        margin: '0 0 6px 0'
+      }}
+    >
       Error Occurred
     </h4>
-    <p style={{ fontFamily: baseFontFamily, fontSize: '14px', color: '#7F1D1D', margin: '0 0 12px 0' }}>{message}</p>
+    <p
+      style={{
+        fontFamily: tokens.typography.fontFamily,
+        fontSize: tokens.typography.fontSize.sm,
+        color: tokens.colors.status.error.text,
+        margin: '0 0 12px 0'
+      }}
+    >
+      {message}
+    </p>
     {onRetry && (
       <Button variant="danger" size="sm" onClick={onRetry}>
         Retry
@@ -220,18 +323,46 @@ export const ErrorState: React.FC<{ message: string; onRetry?: () => void }> = (
 
 export const AccessDeniedState: React.FC = () => (
   <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-    <h2 style={{ fontFamily: baseFontFamily, fontSize: '20px', fontWeight: 600, color: '#0F172A' }}>
+    <h2
+      style={{
+        fontFamily: tokens.typography.fontFamily,
+        fontSize: tokens.typography.fontSize.xl,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        color: tokens.colors.neutral[900]
+      }}
+    >
       Access Denied
     </h2>
-    <p style={{ fontFamily: baseFontFamily, fontSize: '14px', color: '#64748B', marginTop: '8px' }}>
+    <p
+      style={{
+        fontFamily: tokens.typography.fontFamily,
+        fontSize: tokens.typography.fontSize.sm,
+        color: tokens.colors.neutral[500],
+        marginTop: '8px'
+      }}
+    >
       You do not have permission to view or manage this resource. Please contact your hospital administrator.
     </p>
   </div>
 );
 
 export const OfflineState: React.FC = () => (
-  <div style={{ padding: '12px 16px', backgroundColor: '#FFFBEB', borderBottom: '1px solid #FDE68A', textAlign: 'center' }}>
-    <span style={{ fontFamily: baseFontFamily, fontSize: '13px', color: '#92400E', fontWeight: 500 }}>
+  <div
+    style={{
+      padding: '12px 16px',
+      backgroundColor: tokens.colors.status.warning.bg,
+      borderBottom: `1px solid ${tokens.colors.status.warning.border}`,
+      textAlign: 'center'
+    }}
+  >
+    <span
+      style={{
+        fontFamily: tokens.typography.fontFamily,
+        fontSize: tokens.typography.fontSize.sm,
+        color: tokens.colors.status.warning.text,
+        fontWeight: tokens.typography.fontWeight.medium
+      }}
+    >
       Network Disconnected — You are currently viewing offline cached health records.
     </span>
   </div>

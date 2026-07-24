@@ -2,12 +2,11 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 
+import { UserSession } from '@medonivo/shared-types';
+
 export interface RequestWithId extends Request {
   id?: string;
-  user?: {
-    id: string;
-    [key: string]: unknown;
-  };
+  user?: UserSession;
 }
 
 @Injectable()

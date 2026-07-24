@@ -9,6 +9,7 @@ import {
   BellIcon,
   ShieldCheckIcon
 } from '@medonivo/icons';
+import { tokens } from '@medonivo/design-tokens';
 
 export const metadata = {
   title: 'Medonivo Workspace - Hospital Operations OS',
@@ -18,13 +19,20 @@ export const metadata = {
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#F8FAFC' }}>
+      <body
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          backgroundColor: tokens.colors.neutral[50],
+          fontFamily: tokens.typography.fontFamily
+        }}
+      >
         {/* Desktop / Tablet Side Navigation */}
         <aside
           style={{
             width: '240px',
-            backgroundColor: '#0F172A',
-            color: '#F8FAFC',
+            backgroundColor: tokens.colors.neutral[900],
+            color: tokens.colors.neutral[50],
             display: 'flex',
             flexDirection: 'column',
             flexShrink: 0
@@ -34,18 +42,18 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
           <div
             style={{
               padding: '18px 20px',
-              borderBottom: '1px solid #1E293B',
+              borderBottom: `1px solid ${tokens.colors.neutral[800]}`,
               display: 'flex',
               alignItems: 'center',
-              gap: '10px'
+              gap: tokens.spacing.xs
             }}
           >
-            <StethoscopeIcon size={24} color="#0284C7" />
+            <StethoscopeIcon size={24} color={tokens.colors.brand[500]} />
             <div>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: '#FFFFFF', display: 'block', lineHeight: 1.2 }}>
+              <span style={{ fontSize: tokens.typography.fontSize.base, fontWeight: tokens.typography.fontWeight.bold, color: '#FFFFFF', display: 'block', lineHeight: 1.2 }}>
                 Medonivo OS
               </span>
-              <span style={{ fontSize: '11px', color: '#94A3B8' }}>Square Hospitals Ltd.</span>
+              <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[400] }}>Square Hospitals Ltd.</span>
             </div>
           </div>
 
@@ -58,11 +66,12 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
                 alignItems: 'center',
                 gap: '10px',
                 padding: '10px 12px',
-                borderRadius: '6px',
-                backgroundColor: '#1E293B',
-                color: '#38BDF8',
-                fontSize: '14px',
-                fontWeight: 600
+                borderRadius: tokens.borderRadius.md,
+                backgroundColor: tokens.colors.neutral[800],
+                color: tokens.colors.brand[500],
+                fontSize: tokens.typography.fontSize.sm,
+                fontWeight: tokens.typography.fontWeight.semibold,
+                textDecoration: 'none'
               }}
             >
               <CalendarIcon size={18} />
@@ -76,10 +85,11 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
                 alignItems: 'center',
                 gap: '10px',
                 padding: '10px 12px',
-                borderRadius: '6px',
-                color: '#94A3B8',
-                fontSize: '14px',
-                fontWeight: 500
+                borderRadius: tokens.borderRadius.md,
+                color: tokens.colors.neutral[400],
+                fontSize: tokens.typography.fontSize.sm,
+                fontWeight: tokens.typography.fontWeight.medium,
+                textDecoration: 'none'
               }}
             >
               <UserIcon size={18} />
@@ -93,10 +103,11 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
                 alignItems: 'center',
                 gap: '10px',
                 padding: '10px 12px',
-                borderRadius: '6px',
-                color: '#94A3B8',
-                fontSize: '14px',
-                fontWeight: 500
+                borderRadius: tokens.borderRadius.md,
+                color: tokens.colors.neutral[400],
+                fontSize: tokens.typography.fontSize.sm,
+                fontWeight: tokens.typography.fontWeight.medium,
+                textDecoration: 'none'
               }}
             >
               <StethoscopeIcon size={18} />
@@ -110,10 +121,11 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
                 alignItems: 'center',
                 gap: '10px',
                 padding: '10px 12px',
-                borderRadius: '6px',
-                color: '#94A3B8',
-                fontSize: '14px',
-                fontWeight: 500
+                borderRadius: tokens.borderRadius.md,
+                color: tokens.colors.neutral[400],
+                fontSize: tokens.typography.fontSize.sm,
+                fontWeight: tokens.typography.fontWeight.medium,
+                textDecoration: 'none'
               }}
             >
               <FileTextIcon size={18} />
@@ -127,10 +139,11 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
                 alignItems: 'center',
                 gap: '10px',
                 padding: '10px 12px',
-                borderRadius: '6px',
-                color: '#94A3B8',
-                fontSize: '14px',
-                fontWeight: 500
+                borderRadius: tokens.borderRadius.md,
+                color: tokens.colors.neutral[400],
+                fontSize: tokens.typography.fontSize.sm,
+                fontWeight: tokens.typography.fontWeight.medium,
+                textDecoration: 'none'
               }}
             >
               <ShieldCheckIcon size={18} />
@@ -139,8 +152,8 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
           </nav>
 
           {/* Branch Info Footer */}
-          <div style={{ padding: '16px', borderTop: '1px solid #1E293B', fontSize: '12px', color: '#64748B' }}>
-            <div style={{ fontWeight: 600, color: '#CBD5E1' }}>Branch: Central Dhaka</div>
+          <div style={{ padding: '16px', borderTop: `1px solid ${tokens.colors.neutral[800]}`, fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[500] }}>
+            <div style={{ fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[300] }}>Branch: Central Dhaka</div>
             <div>Shift: Morning (08:00 - 16:00)</div>
           </div>
         </aside>
@@ -152,37 +165,37 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
             style={{
               height: '60px',
               backgroundColor: '#FFFFFF',
-              borderBottom: '1px solid #E2E8F0',
+              borderBottom: `1px solid ${tokens.colors.neutral[200]}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '0 24px'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <BuildingIcon size={18} color="#64748B" />
-              <span style={{ fontSize: '14px', fontWeight: 600, color: '#334155' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.xs }}>
+              <BuildingIcon size={18} color={tokens.colors.neutral[500]} />
+              <span style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[700] }}>
                 Branch: Main Campus (Dhaka Central)
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button aria-label="Notifications" style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748B' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+              <button aria-label="Notifications" style={{ border: 'none', background: 'none', cursor: 'pointer', color: tokens.colors.neutral[500] }}>
                 <BellIcon size={20} />
               </button>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#F1F5F9', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '13px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.xs }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: tokens.borderRadius.full, backgroundColor: tokens.colors.neutral[100], color: tokens.colors.neutral[700], display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: tokens.typography.fontWeight.semibold, fontSize: tokens.typography.fontSize.xs }}>
                   DR
                 </div>
-                <div style={{ fontSize: '13px' }}>
-                  <div style={{ fontWeight: 600, color: '#0F172A' }}>Dr. Tanvir Rahman</div>
-                  <div style={{ fontSize: '11px', color: '#64748B' }}>Medical Practitioner</div>
+                <div style={{ fontSize: tokens.typography.fontSize.xs }}>
+                  <div style={{ fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>Dr. Tanvir Rahman</div>
+                  <div style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[500] }}>Medical Practitioner</div>
                 </div>
               </div>
             </div>
           </header>
 
-          <main style={{ flex: 1, padding: '24px' }}>{children}</main>
+          <main style={{ flex: 1, padding: tokens.spacing.lg }}>{children}</main>
         </div>
       </body>
     </html>

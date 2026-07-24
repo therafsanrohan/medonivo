@@ -50,7 +50,7 @@ export class AuditInterceptor implements NestInterceptor {
         if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
           const sanitizedBody = sanitizePayload(req.body);
           this.logger.log(
-            `AUDIT [req_id=${requestId}] Action: ${method} ${url} | Duration: ${duration}ms | User: ${req.user?.id || 'anonymous'} | Body: ${JSON.stringify(sanitizedBody)}`
+            `AUDIT [req_id=${requestId}] Action: ${method} ${url} | Duration: ${duration}ms | User: ${req.user?.userId || 'anonymous'} | Body: ${JSON.stringify(sanitizedBody)}`
           );
         }
       })
