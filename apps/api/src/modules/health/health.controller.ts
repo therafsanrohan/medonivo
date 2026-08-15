@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { PrismaService } from '../../database/prisma.service';

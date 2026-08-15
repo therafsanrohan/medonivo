@@ -1,6 +1,6 @@
 import React from 'react';
 import './globals.css';
-import { StethoscopeIcon, UserIcon, CalendarIcon, FileTextIcon, BellIcon } from '@medonivo/icons';
+import { StethoscopeIcon, UserIcon, CalendarIcon, FileTextIcon, BellIcon, HomeIcon } from '@medonivo/icons';
 import { tokens } from '@medonivo/design-tokens';
 
 export const metadata = {
@@ -109,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               textDecoration: 'none'
             }}
           >
-            <StethoscopeIcon size={20} />
+            <HomeIcon size={20} />
             <span>Home</span>
           </a>
           <a

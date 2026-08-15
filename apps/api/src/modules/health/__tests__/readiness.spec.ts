@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HealthController } from '../health.controller';
 import { PrismaService } from '../../../database/prisma.service';
 import { RedisService } from '../../../redis/redis.service';

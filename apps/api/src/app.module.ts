@@ -1,4 +1,5 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { QueueModule } from './modules/queue/queue.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './database/database.module';
@@ -11,6 +12,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
   imports: [
+    QueueModule,
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 100

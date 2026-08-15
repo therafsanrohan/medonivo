@@ -367,3 +367,4 @@ export const OfflineState: React.FC = () => (
     </span>
   </div>
 );
+export * from './modal';
