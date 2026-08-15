@@ -6,7 +6,7 @@ import { REQUEST } from '@nestjs/core';
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private static pool: Pool;
   
-  constructor(@Inject(REQUEST) private readonly request: any) {}
+  constructor(@Inject(REQUEST) private readonly request: Record<string, unknown>) {}
 
   async onModuleInit() {
     if (!DatabaseService.pool) {
@@ -23,7 +23,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   // Executes a query scoped to the current tenant and user (RLS context)
-  async query<T = any>(queryText: string, values: any[] = []): Promise<T[]> {
+  async query<T = unknown>(queryText: string, values: unknown[] = []): Promise<T[]> {
     const client: PoolClient = await DatabaseService.pool.connect();
     
     try {

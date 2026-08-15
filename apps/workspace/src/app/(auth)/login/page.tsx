@@ -1,18 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Input, Button } from '@medonivo/ui';
 import { tokens } from '@medonivo/design-tokens';
 import { useRouter } from 'next/navigation';
+import { createClient } from '../../../utils/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, redirect to dashboard directly. 
-    // Sprint 3 will hook this up to Supabase Auth.
-    router.push('/');
+    setIsLoading(true);
+    setError(null);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+      setIsLoading(false);
+    } else {
+      router.push('/');
+      router.refresh();
+    }
   };
 
   return (
@@ -58,18 +76,28 @@ export default function LoginPage() {
                 label="Email Address"
                 type="email"
                 placeholder="doctor@hospital.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
               <Input
                 label="Password"
                 type="password"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             
-            <Button type="submit" fullWidth size="lg">
-              Sign In
+            {error && (
+              <div style={{ color: tokens.colors.status.error.text, fontSize: tokens.typography.fontSize.sm }}>
+                {error}
+              </div>
+            )}
+
+            <Button type="submit" fullWidth size="lg" disabled={isLoading}>
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: tokens.spacing.sm }}>

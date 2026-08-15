@@ -34,7 +34,7 @@ export class QueueController {
   }
 
   @Post('walk-in')
-  async registerWalkIn(@Body() data: any) {
+  async registerWalkIn(@Body() data: Record<string, unknown>) {
     // Mocking an insert to clinical.queues
     return {
       id: Math.random().toString(),
@@ -45,7 +45,7 @@ export class QueueController {
   }
 
   @Patch(':id/status')
-  async updateStatus(@Param('id') id: string, @Body() data: any) {
+  async updateStatus(@Param('id') id: string, @Body() data: Record<string, unknown>) {
     // Mocking an update
     return { success: true, id, newStatus: data.status };
   }

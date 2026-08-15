@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 

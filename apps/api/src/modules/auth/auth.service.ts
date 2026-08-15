@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../database/prisma.service';
@@ -226,7 +225,7 @@ export class AuthService {
   ) {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as any
+      expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as string
     });
 
     const refreshToken = await this.jwtService.signAsync(
@@ -236,7 +235,7 @@ export class AuthService {
       },
       {
         secret: process.env.JWT_REFRESH_SECRET,
-        expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as any
+        expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as string
       }
     );
 
