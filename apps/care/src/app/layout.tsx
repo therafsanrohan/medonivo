@@ -3,6 +3,8 @@ import './globals.css';
 import { StethoscopeIcon, UserIcon, CalendarIcon, FileTextIcon, BellIcon, HomeIcon } from '@medonivo/icons';
 import { tokens } from '@medonivo/design-tokens';
 
+import { ErrorBoundary } from '../components/ErrorBoundary';
+
 export const metadata = {
   title: 'Medonivo Care - Patient & Family Health Portal',
   description: 'Your intelligent personal and family health companion'
@@ -77,7 +79,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Main Content Area */}
         <main style={{ flex: 1, paddingBottom: '70px', maxWidth: '1024px', margin: '0 auto', width: '100%' }}>
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
 
         {/* Responsive Mobile Bottom Navigation */}

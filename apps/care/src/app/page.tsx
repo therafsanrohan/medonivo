@@ -1,23 +1,55 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button, StatusBadge } from '@medonivo/ui';
 import { CalendarIcon, FileTextIcon, ShieldCheckIcon, UserIcon } from '@medonivo/icons';
 import { mockCareUser, mockUpcomingAppointments } from '../fixtures/dev-fixtures';
+import { createClient } from '../utils/supabase/client';
 
 export default function CareHomePage() {
+  const [appointments, setAppointments] = useState(mockUpcomingAppointments);
+  const [userProfile, setUserProfile] = useState(mockCareUser);
+
+  useEffect(() => {
+    const supabase = createClient();
+    async function loadPatientData() {
+      try {
+        const { data } = await supabase
+          .from('appointments')
+          .select('*');
+
+        if (data && data.length > 0) {
+          setAppointments(data.map((apt: any) => ({
+            id: apt.id,
+            doctorName: apt.doctor_name || 'Dr. Arman Hossain',
+            specialty: apt.specialty || 'Cardiology',
+            branchName: 'Dhanmondi Branch',
+            appointmentTime: new Date(apt.appointment_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            queueToken: apt.token || 'A-14',
+            estimatedWaitMinutes: 15,
+            status: apt.status || 'scheduled'
+          })));
+        }
+      } catch (err) {
+        console.error('Care App fetch error:', err);
+      }
+    }
+
+    loadPatientData();
+  }, []);
+
   return (
     <div style={{ padding: '20px' }}>
       {/* CarePass Status Hero */}
       <Card style={{ backgroundColor: '#075985', color: '#FFFFFF', border: 'none', marginBottom: '24px' }}>
         <span style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.9, fontWeight: 600 }}>
-          {mockCareUser.carePassPlan}
+          {userProfile.carePassPlan}
         </span>
         <h1 style={{ fontSize: '22px', fontWeight: 700, margin: '6px 0 8px 0', letterSpacing: '-0.3px' }}>
-          Welcome back, {mockCareUser.name}
+          Welcome back, {userProfile.name}
         </h1>
         <p style={{ fontSize: '14px', opacity: 0.9, margin: 0, lineHeight: '1.4' }}>
-          Your digital health pass includes {mockCareUser.includedConsultations} free doctor consultations and {mockCareUser.diagnosticDiscountPercent}% discount on diagnostic test bookings this month.
+          Your digital health pass includes {userProfile.includedConsultations} free doctor consultations and {userProfile.diagnosticDiscountPercent}% discount on diagnostic test bookings this month.
         </p>
       </Card>
 
@@ -60,10 +92,10 @@ export default function CareHomePage() {
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#1E293B', margin: 0 }}>
           Appointments &amp; Queue Status
         </h2>
-        <span style={{ fontSize: '12px', color: '#0369A1', fontWeight: 500 }}>View History</span>
+        <span style={{ fontSize: '12px', color: '#0369A1', fontWeight: 500, cursor: 'pointer' }}>View History</span>
       </div>
 
-      {mockUpcomingAppointments.map((apt) => (
+      {appointments.map((apt) => (
         <Card key={apt.id} style={{ marginBottom: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
             <div>
@@ -76,8 +108,12 @@ export default function CareHomePage() {
             {apt.appointmentTime} (Estimated wait time: ~{apt.estimatedWaitMinutes} mins)
           </p>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Button variant="outline" size="sm">Digital Check-in</Button>
-            <Button variant="ghost" size="sm">Reschedule</Button>
+            <Button variant="outline" size="sm" onClick={() => alert(`Self Check-in successful for Token #${apt.queueToken}`)}>
+              Digital Check-in
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => alert('Reschedule request sent to reception.')}>
+              Reschedule
+            </Button>
           </div>
         </Card>
       ))}
