@@ -1,26 +1,61 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button, StatusBadge, Input } from '@medonivo/ui';
 import { mockWorkspaceMetrics, mockQueueList } from '../../fixtures/dev-fixtures';
 import { WalkInModal } from '../../components/WalkInModal';
 import { AppointmentModal } from '../../components/AppointmentModal';
+import { BillingModal } from '../../components/BillingModal';
+import { DiagnosticOrderModal } from '../../components/DiagnosticOrderModal';
+import { createClient } from '../../utils/supabase/client';
 
 export default function WorkspaceDashboardPage() {
   const [isWalkInOpen, setWalkInOpen] = useState(false);
   const [isAppointmentOpen, setAppointmentOpen] = useState(false);
+  const [isBillingOpen, setBillingOpen] = useState(false);
+  const [isDiagnosticOpen, setDiagnosticOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [queue, setQueue] = useState<any[]>([]);
-  
-  // derived metrics state to simulate real updates
+  const [queue, setQueue] = useState<any[]>(mockQueueList);
   const [metrics, setMetrics] = useState(mockWorkspaceMetrics);
 
-  // Fetch queue from API
-  React.useEffect(() => {
-    fetch('http://localhost:4000/v1/queues/active')
-      .then(res => res.json())
-      .then(data => setQueue(data))
-      .catch(err => console.error('Error fetching queue:', err));
+  // Fetch queue from Supabase or Fallback API
+  useEffect(() => {
+    const supabase = createClient();
+    async function loadQueueData() {
+      try {
+        const { data } = await supabase
+          .from('queues')
+          .select('*');
+
+        if (data && data.length > 0) {
+          setQueue(data.map((q: any) => ({
+            id: q.id,
+            token: q.token,
+            patientName: q.patient_name || 'Patient',
+            mrnPhone: q.phone || 'N/A',
+            carePassStatus: 'active',
+            carePassLabel: 'Active',
+            queueStatus: q.status === 'waiting' ? 'info' : 'warning',
+            queueStatusLabel: q.status === 'waiting' ? 'Waiting in Chamber' : 'In Consultation'
+          })));
+        } else {
+          // Fallback to local API
+          fetch('http://localhost:4000/v1/queues/active')
+            .then(res => res.json())
+            .then(data => {
+              if (Array.isArray(data)) setQueue(data);
+            })
+            .catch(() => {
+              // Gracefully keep dev fixtures if local API is down
+            });
+        }
+      } catch (e) {
+        console.error('Supabase fetch error:', e);
+      }
+    }
+
+    loadQueueData();
   }, []);
 
   const handleWalkInSubmit = async (patient: any) => {
@@ -37,8 +72,19 @@ export default function WorkspaceDashboardPage() {
         activeWaitingQueue: prev.activeWaitingQueue + 1,
         totalAppointments: prev.totalAppointments + 1,
       }));
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Local optimistic update if API unavailable
+      const newEntry = {
+        id: Math.random().toString(),
+        token: `A-${Math.floor(Math.random() * 100) + 20}`,
+        ...patient
+      };
+      setQueue(prev => [...prev, newEntry]);
+      setMetrics(prev => ({
+        ...prev,
+        activeWaitingQueue: prev.activeWaitingQueue + 1,
+        totalAppointments: prev.totalAppointments + 1,
+      }));
     }
   };
 
@@ -54,6 +100,9 @@ export default function WorkspaceDashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'in_consultation' })
       });
+    } catch {
+      // Ignore network errors
+    } finally {
       setQueue(prevQueue => prevQueue.map(item => {
         if (item.id === id) {
           return {
@@ -64,15 +113,13 @@ export default function WorkspaceDashboardPage() {
         }
         return item;
       }));
-    } catch (err) {
-      console.error(err);
     }
   };
 
   const filteredQueue = queue.filter(item => 
-    item.patientName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    item.mrnPhone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.token.toLowerCase().includes(searchQuery.toLowerCase())
+    (item.patientName || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (item.mrnPhone || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.token || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -88,6 +135,8 @@ export default function WorkspaceDashboardPage() {
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
+          <Button variant="outline" onClick={() => setDiagnosticOpen(true)}>+ Lab Test Order</Button>
+          <Button variant="outline" onClick={() => setBillingOpen(true)}>+ Billing / Invoice</Button>
           <Button variant="outline" onClick={() => setWalkInOpen(true)}>+ Walk-in Patient</Button>
           <Button variant="primary" onClick={() => setAppointmentOpen(true)}>+ New Appointment</Button>
         </div>
@@ -190,6 +239,8 @@ export default function WorkspaceDashboardPage() {
       
       <WalkInModal isOpen={isWalkInOpen} onClose={() => setWalkInOpen(false)} onSubmit={handleWalkInSubmit} />
       <AppointmentModal isOpen={isAppointmentOpen} onClose={() => setAppointmentOpen(false)} onSubmit={handleAppointmentSubmit} />
+      <BillingModal isOpen={isBillingOpen} onClose={() => setBillingOpen(false)} onSubmit={(data) => alert(`Invoice ${data.invoiceNumber} generated! Total: BDT ${data.total}`)} patientName={selectedPatient} />
+      <DiagnosticOrderModal isOpen={isDiagnosticOpen} onClose={() => setDiagnosticOpen(false)} onSubmit={(data) => alert(`Diagnostic order ${data.orderId} placed for ${data.patientName}`)} />
     </div>
   );
 }

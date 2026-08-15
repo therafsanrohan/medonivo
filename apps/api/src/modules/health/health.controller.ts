@@ -1,6 +1,6 @@
 import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { PrismaService } from '../../database/prisma.service';
+import { DatabaseService } from '../../database/database.service';
 import { RedisService } from '../../redis/redis.service';
 import { HealthCheckStatus } from '@medonivo/shared-types';
 
@@ -8,7 +8,7 @@ import { HealthCheckStatus } from '@medonivo/shared-types';
 @Controller('health')
 export class HealthController {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly db: DatabaseService,
     private readonly redis: RedisService
   ) {}
 
@@ -19,7 +19,7 @@ export class HealthController {
     let redisOk = false;
 
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this.db.query('SELECT 1');
       dbOk = true;
     } catch {
       dbOk = false;
@@ -50,7 +50,7 @@ export class HealthController {
   @ApiOperation({ summary: 'Readiness check for load balancer traffic readiness' })
   async checkReadiness(): Promise<{ ready: boolean; timestamp: string }> {
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this.db.query('SELECT 1');
       await this.redis.getClient().ping();
       return {
         ready: true,

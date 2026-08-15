@@ -8,6 +8,8 @@ import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { PatientModule } from './modules/patient/patient.module';
+import { BillingModule } from './modules/billing/billing.module';
+import { DiagnosticsModule } from './modules/diagnostics/diagnostics.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -22,7 +24,9 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     HealthModule,
     AuthModule,
     OrganizationModule,
-    PatientModule
+    PatientModule,
+    BillingModule,
+    DiagnosticsModule
   ],
   providers: [
     {

@@ -2,11 +2,18 @@ import { Injectable, OnModuleInit, OnModuleDestroy, Scope, Inject } from '@nestj
 import { Pool, PoolClient } from 'pg';
 import { REQUEST } from '@nestjs/core';
 
+interface ScopedRequest {
+  tenantId?: string;
+  user?: {
+    id?: string;
+  };
+}
+
 @Injectable({ scope: Scope.REQUEST })
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private static pool: Pool;
   
-  constructor(@Inject(REQUEST) private readonly request: Record<string, unknown>) {}
+  constructor(@Inject(REQUEST) private readonly request: ScopedRequest) {}
 
   async onModuleInit() {
     if (!DatabaseService.pool) {
@@ -28,8 +35,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     
     try {
       // Set RLS context variables based on the authenticated request
-      const tenantId = this.request.tenantId;
-      const userId = this.request.user?.id;
+      const tenantId = this.request?.tenantId;
+      const userId = this.request?.user?.id;
       
       await client.query('BEGIN');
       

@@ -1,29 +1,29 @@
 import { HealthController } from '../health.controller';
-import { PrismaService } from '../../../database/prisma.service';
+import { DatabaseService } from '../../../database/database.service';
 import { RedisService } from '../../../redis/redis.service';
 
 describe('HealthController', () => {
   let controller: HealthController;
-  let mockPrisma: Partial<PrismaService>;
+  let mockDb: Partial<DatabaseService>;
   let mockRedis: Partial<RedisService>;
 
   beforeEach(() => {
-    mockPrisma = {
-      $queryRaw: jest.fn().mockResolvedValue([{ 1: 1 }])
+    mockDb = {
+      query: jest.fn().mockResolvedValue([{ '?column?': 1 }])
     };
     mockRedis = {
       getClient: jest.fn().mockReturnValue({
         ping: jest.fn().mockResolvedValue('PONG')
-      } as unknown as ReturnType<RedisService['getClient']>)
+      } as any)
     };
 
     controller = new HealthController(
-      mockPrisma as PrismaService,
+      mockDb as DatabaseService,
       mockRedis as RedisService
     );
   });
 
-  it('returns ok status when db and redis are healthy', async () => {
+  it('should return status ok when db and redis are alive', async () => {
     const result = await controller.check();
     expect(result.status).toBe('ok');
     expect(result.services.database).toBe(true);

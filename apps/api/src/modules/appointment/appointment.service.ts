@@ -1,149 +1,97 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
+import { DatabaseService } from '../../database/database.service';
+
+export interface AppointmentRecord {
+  id: string;
+  tenant_id: string;
+  branch_id: string;
+  patient_id: string;
+  doctor_id: string;
+  appointment_time: string;
+  status: string;
+  type: string;
+  created_at: string;
+  updated_at: string;
+}
 
 @Injectable()
 export class AppointmentService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly db: DatabaseService) {}
 
   async createAppointment(
     tenantId: string | null,
     patientId: string,
-    doctorProfileId: string,
+    doctorId: string,
     branchId: string,
-    dateStr: string,
-    startTime: string,
-    endTime: string,
-    serviceId?: string
+    appointmentTime: string,
+    type = 'consultation'
   ) {
-    const date = new Date(dateStr);
-
-    // Verify patient profile belongs to tenant
-    const patient = await this.prisma.patientProfile.findFirst({
-      where: { id: patientId, user: { tenantId } }
-    });
-    if (!patient) {
-      throw new NotFoundException('Patient profile not found under this tenant');
+    // 1. Verify patient exists
+    const patients = await this.db.query<{ id: string }>(
+      'SELECT id FROM patient.patients WHERE id = $1',
+      [patientId]
+    );
+    if (patients.length === 0) {
+      throw new NotFoundException('Patient profile not found');
     }
 
-    // Verify branch belongs to tenant
-    const branch = await this.prisma.branch.findFirst({
-      where: { id: branchId, organization: { tenantId: tenantId || undefined } }
-    });
-    if (!branch) {
-      throw new NotFoundException('Branch not found under this tenant');
-    }
+    // 2. Check for duplicate booking
+    const duplicates = await this.db.query<{ id: string }>(
+      `SELECT id FROM scheduling.appointments 
+       WHERE doctor_id = $1 AND appointment_time = $2 AND status IN ('scheduled', 'checked_in')`,
+      [doctorId, appointmentTime]
+    );
 
-    // Check for duplicate booking at the same slot
-    const duplicateApp = await this.prisma.appointment.findFirst({
-      where: {
-        doctorProfileId,
-        appointmentDate: date,
-        startTime,
-        status: { in: ['PENDING', 'CHECKED_IN'] }
-      }
-    });
-
-    if (duplicateApp) {
+    if (duplicates.length > 0) {
       throw new ConflictException('This booking slot is already reserved');
     }
 
-    return this.prisma.appointment.create({
-      data: {
-        patientId,
-        doctorProfileId,
-        branchId,
-        serviceId: serviceId || null,
-        appointmentDate: date,
-        startTime,
-        endTime,
-        status: 'PENDING'
-      }
-    });
+    // 3. Insert appointment
+    const res = await this.db.query<AppointmentRecord>(
+      `INSERT INTO scheduling.appointments (tenant_id, branch_id, patient_id, doctor_id, appointment_time, status, type)
+       VALUES ($1, $2, $3, $4, $5, 'scheduled', $6)
+       RETURNING *`,
+      [tenantId, branchId, patientId, doctorId, appointmentTime, type]
+    );
+
+    return res[0];
   }
 
   async checkIn(tenantId: string | null, appointmentId: string) {
-    const app = await this.prisma.appointment.findFirst({
-      where: {
-        id: appointmentId,
-        branch: { organization: { tenantId: tenantId || undefined } }
-      },
-      include: {
-        doctorProfile: true
-      }
-    });
+    const apps = await this.db.query<AppointmentRecord>(
+      'SELECT * FROM scheduling.appointments WHERE id = $1',
+      [appointmentId]
+    );
 
-    if (!app) {
-      throw new NotFoundException('Appointment not found or tenant context mismatch');
+    if (apps.length === 0) {
+      throw new NotFoundException('Appointment not found');
     }
 
-    if (app.status !== 'PENDING') {
+    const app = apps[0];
+    if (app.status !== 'scheduled') {
       throw new ConflictException(`Cannot check in appointment that is already ${app.status}`);
     }
 
-    // Generate queue token (e.g. sequence ticket based on number of active tickets today for this doctor)
-    const count = await this.prisma.appointment.count({
-      where: {
-        doctorProfileId: app.doctorProfileId,
-        appointmentDate: app.appointmentDate,
-        status: 'CHECKED_IN'
-      }
-    });
+    // Update appointment status to checked_in
+    const updated = await this.db.query<AppointmentRecord>(
+      `UPDATE scheduling.appointments SET status = 'checked_in', updated_at = NOW() WHERE id = $1 RETURNING *`,
+      [appointmentId]
+    );
 
-    const queueToken = `T-${101 + count}`;
-
-    return this.prisma.appointment.update({
-      where: { id: appointmentId },
-      data: {
-        status: 'CHECKED_IN',
-        queueToken,
-        checkedInAt: new Date()
-      }
-    });
+    return updated[0];
   }
 
   async getLiveQueue(tenantId: string | null, branchId: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const appointments = await this.prisma.appointment.findMany({
-      where: {
-        branchId,
-        appointmentDate: today,
-        status: 'CHECKED_IN',
-        branch: { organization: { tenantId: tenantId || undefined } }
-      },
-      include: {
-        patient: {
-          include: {
-            user: true
-          }
-        },
-        doctorProfile: {
-          include: {
-            staffProfile: {
-              include: {
-                user: true
-              }
-            }
-          }
-        }
-      },
-      orderBy: {
-        checkedInAt: 'asc'
-      }
-    });
-
-    // Estimate waiting time (15 mins per patient in queue)
-    return appointments.map((app, index) => {
-      const waitTimeMinutes = index * 15;
-      return {
-        id: app.id,
-        patientName: app.patient.user.fullName,
-        doctorName: app.doctorProfile.staffProfile.user.fullName,
-        queueToken: app.queueToken,
-        checkedInAt: app.checkedInAt,
-        estimatedWaitTimeMinutes: waitTimeMinutes
-      };
-    });
+    return this.db.query(
+      `SELECT a.id, a.appointment_time, a.status, 
+              p.first_name || ' ' || p.last_name as patient_name,
+              s.first_name || ' ' || s.last_name as doctor_name
+       FROM scheduling.appointments a
+       JOIN patient.patients p ON a.patient_id = p.id
+       JOIN identity.staff s ON a.doctor_id = s.id
+       WHERE a.branch_id = $1 AND a.status = 'checked_in'
+       ORDER BY a.appointment_time ASC`,
+      [branchId]
+    );
   }
 }

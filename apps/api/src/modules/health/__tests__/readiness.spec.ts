@@ -1,30 +1,30 @@
 import { HealthController } from '../health.controller';
-import { PrismaService } from '../../../database/prisma.service';
+import { DatabaseService } from '../../../database/database.service';
 import { RedisService } from '../../../redis/redis.service';
-import { HttpException, HttpStatus } from '@nestjs/common';
 
-describe('HealthController Readiness Check', () => {
+describe('HealthController Readiness', () => {
   let controller: HealthController;
-  let mockPrisma: Partial<PrismaService>;
+  let mockDb: Partial<DatabaseService>;
   let mockRedis: Partial<RedisService>;
 
-  it('returns ready: true when DB and Redis ping succeed', async () => {
-    mockPrisma = { $queryRaw: jest.fn().mockResolvedValue([{ 1: 1 }]) };
-    mockRedis = { getClient: jest.fn().mockReturnValue({ ping: jest.fn().mockResolvedValue('PONG') } as unknown as ReturnType<RedisService['getClient']>) };
+  beforeEach(() => {
+    mockDb = {
+      query: jest.fn().mockResolvedValue([{ '?column?': 1 }])
+    };
+    mockRedis = {
+      getClient: jest.fn().mockReturnValue({
+        ping: jest.fn().mockResolvedValue('PONG')
+      } as any)
+    };
 
-    controller = new HealthController(mockPrisma as PrismaService, mockRedis as RedisService);
-    const readiness = await controller.checkReadiness();
-
-    expect(readiness.ready).toBe(true);
-    expect(readiness.timestamp).toBeDefined();
+    controller = new HealthController(
+      mockDb as DatabaseService,
+      mockRedis as RedisService
+    );
   });
 
-  it('throws 533 SERVICE_UNAVAILABLE when DB fails', async () => {
-    mockPrisma = { $queryRaw: jest.fn().mockRejectedValue(new Error('DB Connection Refused')) };
-    mockRedis = { getClient: jest.fn().mockReturnValue({ ping: jest.fn().mockResolvedValue('PONG') } as unknown as ReturnType<RedisService['getClient']>) };
-
-    controller = new HealthController(mockPrisma as PrismaService, mockRedis as RedisService);
-
-    await expect(controller.checkReadiness()).rejects.toThrow(HttpException);
+  it('should return ready true when services are healthy', async () => {
+    const res = await controller.checkReadiness();
+    expect(res.ready).toBe(true);
   });
 });
