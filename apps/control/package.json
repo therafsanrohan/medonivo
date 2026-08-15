@@ -19,6 +19,8 @@
     "@medonivo/shared-types": "workspace:*",
     "@medonivo/ui": "workspace:*",
     "@medonivo/validation": "workspace:*",
+    "@supabase/ssr": "^0.3.0",
+    "@supabase/supabase-js": "^2.43.4",
     "next": "^14.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

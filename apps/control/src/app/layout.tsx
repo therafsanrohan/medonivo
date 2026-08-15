@@ -3,6 +3,8 @@ import './globals.css';
 import { BuildingIcon, ShieldCheckIcon, FileTextIcon, StethoscopeIcon } from '@medonivo/icons';
 import { tokens } from '@medonivo/design-tokens';
 
+import { ErrorBoundary } from '../components/ErrorBoundary';
+
 export const metadata = {
   title: 'Medonivo Control - Platform Super Admin Panel',
   description: 'Hospital SaaS subscriptions, tenant verification, CarePass plans & system health'
@@ -125,7 +127,11 @@ export default function ControlLayout({ children }: { children: React.ReactNode 
             </div>
           </header>
 
-          <main style={{ flex: 1, padding: tokens.spacing.lg }}>{children}</main>
+          <main style={{ flex: 1, padding: tokens.spacing.lg }}>
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
         </div>
       </body>
     </html>

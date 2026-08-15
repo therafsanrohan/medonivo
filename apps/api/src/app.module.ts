@@ -10,6 +10,8 @@ import { OrganizationModule } from './modules/organization/organization.module';
 import { PatientModule } from './modules/patient/patient.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { DiagnosticsModule } from './modules/diagnostics/diagnostics.module';
+import { CarePassModule } from './modules/carepass/carepass.module';
+import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -26,7 +28,9 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     OrganizationModule,
     PatientModule,
     BillingModule,
-    DiagnosticsModule
+    DiagnosticsModule,
+    CarePassModule,
+    PrescriptionModule
   ],
   providers: [
     {

@@ -1,6 +1,7 @@
 import React from 'react';
 import './globals.css';
 import { tokens } from '@medonivo/design-tokens';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export const metadata = {
   title: 'Medonivo - The Intelligent Healthcare Platform',
@@ -18,7 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           margin: 0,
         }}
       >
-        {children}
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
       </body>
     </html>
   );

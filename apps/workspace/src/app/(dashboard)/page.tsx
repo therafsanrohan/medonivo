@@ -7,6 +7,8 @@ import { WalkInModal } from '../../components/WalkInModal';
 import { AppointmentModal } from '../../components/AppointmentModal';
 import { BillingModal } from '../../components/BillingModal';
 import { DiagnosticOrderModal } from '../../components/DiagnosticOrderModal';
+import { CarePassCardModal } from '../../components/CarePassCardModal';
+import { PrescriptionModal } from '../../components/PrescriptionModal';
 import { createClient } from '../../utils/supabase/client';
 
 export default function WorkspaceDashboardPage() {
@@ -14,6 +16,9 @@ export default function WorkspaceDashboardPage() {
   const [isAppointmentOpen, setAppointmentOpen] = useState(false);
   const [isBillingOpen, setBillingOpen] = useState(false);
   const [isDiagnosticOpen, setDiagnosticOpen] = useState(false);
+  const [isCarePassOpen, setCarePassOpen] = useState(false);
+  const [isPrescriptionOpen, setPrescriptionOpen] = useState(false);
+
   const [selectedPatient, setSelectedPatient] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [queue, setQueue] = useState<any[]>(mockQueueList);
@@ -130,15 +135,17 @@ export default function WorkspaceDashboardPage() {
             Reception and Live Patient Queue
           </h1>
           <p style={{ fontSize: '14px', color: '#64748B', margin: 0 }}>
-            Manage walk-in registrations, digital check-ins, consultation queues, and partial billing.
+            Manage walk-in registrations, digital check-ins, consultation queues, and e-prescriptions.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <Button variant="outline" onClick={() => setDiagnosticOpen(true)}>+ Lab Test Order</Button>
-          <Button variant="outline" onClick={() => setBillingOpen(true)}>+ Billing / Invoice</Button>
-          <Button variant="outline" onClick={() => setWalkInOpen(true)}>+ Walk-in Patient</Button>
-          <Button variant="primary" onClick={() => setAppointmentOpen(true)}>+ New Appointment</Button>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <Button variant="outline" onClick={() => setCarePassOpen(true)}>💳 CarePass QR</Button>
+          <Button variant="outline" onClick={() => setPrescriptionOpen(true)}>📝 Issue Rx</Button>
+          <Button variant="outline" onClick={() => setDiagnosticOpen(true)}>+ Lab Order</Button>
+          <Button variant="outline" onClick={() => setBillingOpen(true)}>+ Invoice</Button>
+          <Button variant="outline" onClick={() => setWalkInOpen(true)}>+ Walk-in</Button>
+          <Button variant="primary" onClick={() => setAppointmentOpen(true)}>+ Appointment</Button>
         </div>
       </div>
 
@@ -241,6 +248,8 @@ export default function WorkspaceDashboardPage() {
       <AppointmentModal isOpen={isAppointmentOpen} onClose={() => setAppointmentOpen(false)} onSubmit={handleAppointmentSubmit} />
       <BillingModal isOpen={isBillingOpen} onClose={() => setBillingOpen(false)} onSubmit={(data) => alert(`Invoice ${data.invoiceNumber} generated! Total: BDT ${data.total}`)} patientName={selectedPatient} />
       <DiagnosticOrderModal isOpen={isDiagnosticOpen} onClose={() => setDiagnosticOpen(false)} onSubmit={(data) => alert(`Diagnostic order ${data.orderId} placed for ${data.patientName}`)} />
+      <CarePassCardModal isOpen={isCarePassOpen} onClose={() => setCarePassOpen(false)} />
+      <PrescriptionModal isOpen={isPrescriptionOpen} onClose={() => setPrescriptionOpen(false)} />
     </div>
   );
 }
