@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { emailPasswordAuthSchema, EmailPasswordAuthInput } from '@medonivo/validation';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Identity & Authentication')

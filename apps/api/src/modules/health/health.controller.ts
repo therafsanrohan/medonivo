@@ -2,7 +2,7 @@ import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { DatabaseService } from '../../database/database.service';
 import { RedisService } from '../../redis/redis.service';
-import { HealthCheckStatus } from '@medonivo/shared-types';
+import type { HealthCheckStatus } from '@medonivo/shared-types';
 
 @ApiTags('Health & Security')
 @Controller('health')

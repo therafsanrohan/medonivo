@@ -6,7 +6,7 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { TenantIsolationGuard } from '../auth/guards/tenant-isolation.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { RequirePermissions } from '../../common/decorators/require-permissions.decorator';
-import { UserSession } from '@medonivo/shared-types';
+import type { UserSession } from '@medonivo/shared-types';
 
 @ApiTags('Healthcare Facilities & Settings')
 @Controller('organization')
