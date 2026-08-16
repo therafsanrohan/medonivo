@@ -2,7 +2,8 @@ import { Controller, Post, Body, Req, UseGuards, HttpCode, HttpStatus } from '@n
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
-import { emailPasswordAuthSchema, EmailPasswordAuthInput } from '@medonivo/validation';
+import { emailPasswordAuthSchema } from '@medonivo/validation';
+import type { EmailPasswordAuthInput } from '@medonivo/validation';
 import type { Request } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
