@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Param, Headers } from '@nestjs/common';
-import { PrescriptionService, CreatePrescriptionDto } from './prescription.service';
+import { PrescriptionService } from './prescription.service';
+import type { CreatePrescriptionDto } from './prescription.service';
 
 @Controller('v1/prescriptions')
 export class PrescriptionController {

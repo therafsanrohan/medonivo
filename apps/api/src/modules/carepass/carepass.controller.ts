@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Param, Headers } from '@nestjs/common';
-import { CarePassService, CreateCarePassDto } from './carepass.service';
+import { CarePassService } from './carepass.service';
+import type { CreateCarePassDto } from './carepass.service';
 
 @Controller('v1/carepass')
 export class CarePassController {
