@@ -4,12 +4,22 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Guard: if Supabase env vars are not configured (e.g. Vercel preview without env),
+  // skip auth check to prevent FUNCTION_INVOCATION_FAILED crashes.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    // Can't authenticate — allow request through so the app doesn't hard-crash
+    return NextResponse.next();
+  }
+
   // Update the user session (refresh tokens if necessary)
   const response = await updateSession(request)
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         get(name: string) {
