@@ -7,6 +7,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { validateEnv } from './config/env.config';
+import type { INestApplication } from '@nestjs/common';
 
 export function parseCorsOrigins(allowedOriginsStr?: string): (string | RegExp)[] {
   if (!allowedOriginsStr) {
@@ -15,10 +16,17 @@ export function parseCorsOrigins(allowedOriginsStr?: string): (string | RegExp)[
   return allowedOriginsStr.split(',').map((origin) => origin.trim()).filter(Boolean);
 }
 
-async function bootstrap() {
+// Cache the app instance so it's reused across serverless invocations
+let cachedApp: INestApplication | null = null;
+
+async function createApp(): Promise<INestApplication> {
+  if (cachedApp) {
+    return cachedApp;
+  }
+
   validateEnv(process.env);
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: ['error', 'warn', 'log'] });
 
   app.enableShutdownHooks();
   app.use(helmet());
@@ -69,6 +77,22 @@ async function bootstrap() {
     logger.log('OpenAPI Swagger documentation is disabled in production environment');
   }
 
+  await app.init();
+  cachedApp = app;
+  return app;
+}
+
+// Vercel serverless handler — exported for @vercel/node runtime
+export default async function handler(req: unknown, res: unknown) {
+  const app = await createApp();
+  const expressInstance = app.getHttpAdapter().getInstance();
+  return expressInstance(req, res);
+}
+
+// Standard Node.js server — runs when executed directly (local dev)
+async function bootstrap() {
+  const app = await createApp();
+  const logger = new Logger('Bootstrap');
   const port = Number(process.env.PORT) || 4000;
   await app.listen(port);
   logger.log(`Medonivo Backend API server running on port ${port}`);
