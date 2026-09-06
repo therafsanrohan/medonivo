@@ -16,7 +16,7 @@ export function DemoGatewaySection() {
   ];
 
   return (
-    <section className="py-24 bg-transparent border-t border-white/20 text-center overflow-hidden">
+    <section id="demos" className="py-24 bg-transparent border-t border-white/20 text-center overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -6,11 +6,11 @@ export function NextActionSection() {
   return (
     <section className="py-24 bg-white border-t border-gray-100">
       <div className="mx-auto max-w-7xl px-6 lg:flex lg:items-center lg:gap-16">
-        <div className="lg:w-1/2 mb-12 lg:mb-0">
+        <div className="lg:w-1/2 mb-12 lg:mb-0 text-center lg:text-left flex flex-col items-center lg:items-start">
           <h2 className="text-3xl font-bold tracking-tight text-mainText sm:text-4xl mb-6">
             Always know exactly what to do next.
           </h2>
-          <p className="text-lg text-mutedText mb-8">
+          <p className="text-lg text-mutedText mb-8 max-w-2xl">
             Medonivo removes the guesswork from healthcare. Whether you need to schedule a test, upload a report, or take your medicine, your priority actions are always front and center.
           </p>
           
@@ -46,9 +46,9 @@ export function NextActionSection() {
                     <p className="text-sm text-mutedText">Dr. Shania Esha • General Checkup</p>
                   </div>
                 </div>
-                <Link to="/demo" className="text-sm font-semibold text-white bg-warning hover:bg-yellow-600 px-4 py-2 rounded-lg transition">
+                <button onClick={(e) => e.preventDefault()} className="text-sm font-semibold text-white bg-warning hover:bg-yellow-600 px-4 py-2 rounded-lg transition cursor-not-allowed">
                   Book Now
-                </Link>
+                </button>
               </div>
 
               {/* Normal Priority Action */}
@@ -62,9 +62,9 @@ export function NextActionSection() {
                     <p className="text-sm text-mutedText">Test completed yesterday</p>
                   </div>
                 </div>
-                <Link to="/demo" className="text-sm font-semibold text-primary-blue bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition">
+                <button onClick={(e) => e.preventDefault()} className="text-sm font-semibold text-primary-blue bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition cursor-not-allowed">
                   Upload
-                </Link>
+                </button>
               </div>
 
               {/* Lower Priority Action */}

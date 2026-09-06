@@ -45,7 +45,7 @@ export default function WorkspaceDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Doctor Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white p-6 rounded-3xl shadow-md flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white p-6 rounded-3xl shadow-md flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
           <span className="text-[10px] font-extrabold uppercase tracking-widest bg-sky-500/20 text-sky-300 border border-sky-400/30 px-3 py-1 rounded-full mb-2 inline-block">
             {doctor.currentBranch} • Active Chamber Session

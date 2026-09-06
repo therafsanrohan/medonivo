@@ -30,7 +30,7 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:flex lg:items-center lg:gap-12">
         {/* Text Content */}
         <motion.div 
-          className="lg:w-1/2"
+          className="lg:w-1/2 text-center lg:text-left"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -38,14 +38,14 @@ export function HeroSection() {
           <motion.h1 variants={itemVariants} className="text-4xl font-extrabold tracking-tight text-mainText sm:text-5xl xl:text-6xl mb-6">
             Your healthcare journey should not stop after the appointment.
           </motion.h1>
-          <motion.p variants={itemVariants} className="text-lg text-mutedText mb-10 max-w-2xl">
+          <motion.p variants={itemVariants} className="text-lg text-mutedText mb-10 max-w-2xl mx-auto lg:mx-0">
             Medonivo connects prescriptions, medicines, tests, reports, reviews, and follow-ups into a clear, continuous care journey.
           </motion.p>
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
-            <Link to="/demo" className="group flex items-center justify-center gap-2 rounded-full bg-primary-blue px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+            <a href="#demos" className="group flex items-center justify-center gap-2 rounded-full bg-primary-blue px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
               Try Medonivo
               <ArrowRight className="h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+            </a>
             <a href="#careloop" className="flex items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white px-8 py-3.5 text-base font-semibold text-mainText hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-0.5">
               See How CareLoop Works
             </a>

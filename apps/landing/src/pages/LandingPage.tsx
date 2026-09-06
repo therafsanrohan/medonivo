@@ -26,18 +26,18 @@ export function LandingPage() {
             Healthcare should move forward, not get lost between visits.
           </h2>
           <div className="flex justify-center gap-4">
-            <Link 
-              to="/demo" 
+            <a 
+              href="#demos"
               className="bg-primary-blue text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-600 hover:scale-105 transition-all shadow-lg shadow-primary-blue/30"
             >
               Try Medonivo
-            </Link>
-            <Link 
-              to="/login" 
+            </a>
+            <a 
+              href="#demos"
               className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 hover:scale-105 transition-all"
             >
               Sign In
-            </Link>
+            </a>
           </div>
         </div>
       </section>

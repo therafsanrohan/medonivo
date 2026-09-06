@@ -41,7 +41,7 @@ export function RolesPreviewSection() {
           </motion.div>
           
           <motion.div 
-            className="lg:w-1/2 order-1 lg:order-2"
+            className="lg:w-1/2 order-1 lg:order-2 text-center lg:text-left flex flex-col items-center lg:items-start"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -53,19 +53,19 @@ export function RolesPreviewSection() {
             <h2 className="text-3xl font-bold tracking-tight text-mainText sm:text-4xl mb-6">
               A clinical workspace that thinks like you do.
             </h2>
-            <p className="text-lg text-mutedText mb-8">
+            <p className="text-lg text-mutedText mb-8 max-w-2xl">
               Write prescriptions, recommend tests, and set follow-ups. Medonivo automatically translates your instructions into a structured CareLoop for the patient.
             </p>
-            <Link to="/demo?role=doctor" className="inline-flex items-center justify-center gap-2 text-primary-blue font-semibold hover:text-blue-700 transition group">
+            <a href="#demos" className="inline-flex items-center justify-center gap-2 text-primary-blue font-semibold hover:text-blue-700 transition group">
               Explore Doctor Experience <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </a>
           </motion.div>
         </div>
 
         {/* Organization Experience */}
         <div className="lg:flex lg:items-center lg:gap-16" id="organizations">
           <motion.div 
-            className="lg:w-1/2"
+            className="lg:w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -77,12 +77,12 @@ export function RolesPreviewSection() {
             <h2 className="text-3xl font-bold tracking-tight text-mainText sm:text-4xl mb-6">
               Manage your healthcare operations seamlessly.
             </h2>
-            <p className="text-lg text-mutedText mb-8">
+            <p className="text-lg text-mutedText mb-8 max-w-2xl">
               Verify doctors, manage departments and branches, and oversee appointment capacity without compromising patient data privacy.
             </p>
-            <Link to="/demo?role=org" className="inline-flex items-center justify-center gap-2 text-teal-700 font-semibold hover:text-teal-800 transition group">
+            <a href="#demos" className="inline-flex items-center justify-center gap-2 text-teal-700 font-semibold hover:text-teal-800 transition group">
               Explore Medical Dashboard <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </a>
           </motion.div>
 
           <motion.div 
@@ -111,7 +111,7 @@ export function RolesPreviewSection() {
                          <p className="text-xs text-mutedText">Cardiology</p>
                        </div>
                      </div>
-                     <Link to="/demo?role=org" className="text-xs font-semibold text-primary-blue bg-blue-50/70 backdrop-blur-sm px-3 py-1.5 rounded hover:bg-blue-100 transition-colors">Review</Link>
+                     <button onClick={(e) => e.preventDefault()} className="text-xs font-semibold text-primary-blue bg-blue-50/70 backdrop-blur-sm px-3 py-1.5 rounded hover:bg-blue-100 transition-colors cursor-not-allowed">Review</button>
                    </div>
                  ))}
                </div>
