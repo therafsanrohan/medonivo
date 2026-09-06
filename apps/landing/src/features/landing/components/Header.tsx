@@ -11,7 +11,7 @@ export function Header() {
         <a href="#" className="flex items-center gap-2">
           <Activity className="h-6 w-6 text-primary-blue" />
           <span className="text-xl font-bold text-mainText">Medonivo</span>
-        </Link>
+        </a>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-6 text-sm font-medium text-mutedText">
