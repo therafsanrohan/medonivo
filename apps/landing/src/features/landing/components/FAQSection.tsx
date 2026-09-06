@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const faqs = [
   { question: "What is Medonivo?", answer: "Medonivo is a modern healthcare platform that connects the entire care journey—from finding a doctor and booking an appointment, to tracking medicines, tests, and follow-ups." },
@@ -12,11 +13,17 @@ export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-24 bg-gray-50 border-t border-gray-100">
+    <section id="faq" className="py-24 bg-gray-50 border-t border-gray-100 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:flex lg:gap-16">
         
         {/* Security Info */}
-        <div className="lg:w-1/3 mb-12 lg:mb-0">
+        <motion.div 
+          className="lg:w-1/3 mb-12 lg:mb-0"
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-green-100 text-success mb-6">
             <ShieldCheck className="h-6 w-6" />
           </div>
@@ -26,10 +33,16 @@ export function FAQSection() {
           <p className="text-mutedText mb-6">
             Patient-controlled sharing, consent-based access, and an audit-oriented architecture ensure your health data remains secure and private.
           </p>
-        </div>
+        </motion.div>
 
         {/* FAQ Accordion */}
-        <div className="lg:w-2/3">
+        <motion.div 
+          className="lg:w-2/3"
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <div className="space-y-4">
             {faqs.map((faq, index) => (
               <div 
@@ -52,7 +65,7 @@ export function FAQSection() {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>

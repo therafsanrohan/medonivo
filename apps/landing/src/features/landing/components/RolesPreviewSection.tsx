@@ -1,16 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Stethoscope, Building2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function RolesPreviewSection() {
   return (
-    <section id="doctors" className="py-24 bg-background">
+    <section id="doctors" className="py-24 bg-background overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         
         {/* Doctor Experience */}
         <div className="lg:flex lg:items-center lg:gap-16 mb-24">
-          <div className="lg:w-1/2 order-2 lg:order-1 mt-12 lg:mt-0">
-            <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-200">
+          <motion.div 
+            className="lg:w-1/2 order-2 lg:order-1 mt-12 lg:mt-0"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div 
+              className="bg-white rounded-3xl p-6 shadow-xl border border-gray-200"
+              whileHover={{ y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
                {/* Doctor UI Mockup */}
                <div className="flex items-center justify-between border-b pb-4 mb-4">
                  <div className="flex items-center gap-3">
@@ -26,10 +37,16 @@ export function RolesPreviewSection() {
                  <div className="h-24 bg-gray-50 rounded border border-gray-100"></div>
                  <div className="h-12 bg-blue-50 rounded border border-blue-100 mt-4"></div>
                </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           
-          <div className="lg:w-1/2 order-1 lg:order-2">
+          <motion.div 
+            className="lg:w-1/2 order-1 lg:order-2"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-primary-blue text-sm font-semibold mb-6">
               <Stethoscope className="h-4 w-4" /> For Doctors
             </div>
@@ -42,12 +59,18 @@ export function RolesPreviewSection() {
             <Link to="/demo?role=doctor" className="inline-flex items-center justify-center gap-2 text-primary-blue font-semibold hover:text-blue-700 transition group">
               Explore Doctor Experience <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-          </div>
+          </motion.div>
         </div>
 
         {/* Organization Experience */}
         <div className="lg:flex lg:items-center lg:gap-16" id="organizations">
-          <div className="lg:w-1/2">
+          <motion.div 
+            className="lg:w-1/2"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+          >
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-sm font-semibold mb-6">
               <Building2 className="h-4 w-4" /> For Medical Organizations
             </div>
@@ -60,10 +83,20 @@ export function RolesPreviewSection() {
             <Link to="/demo?role=org" className="inline-flex items-center justify-center gap-2 text-teal-700 font-semibold hover:text-teal-800 transition group">
               Explore Medical Dashboard <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="lg:w-1/2 mt-12 lg:mt-0">
-            <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-200">
+          <motion.div 
+            className="lg:w-1/2 mt-12 lg:mt-0"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <motion.div 
+              className="bg-white rounded-3xl p-6 shadow-xl border border-gray-200"
+              whileHover={{ y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
                {/* Org UI Mockup */}
                <div className="flex items-center justify-between border-b pb-4 mb-4">
                  <p className="font-semibold text-mainText">Pending Verification (3)</p>
@@ -78,12 +111,12 @@ export function RolesPreviewSection() {
                          <p className="text-xs text-mutedText">Cardiology</p>
                        </div>
                      </div>
-                     <button className="text-xs font-semibold text-primary-blue bg-blue-50 px-3 py-1.5 rounded">Review</button>
+                     <button className="text-xs font-semibold text-primary-blue bg-blue-50 px-3 py-1.5 rounded hover:bg-blue-100 transition-colors">Review</button>
                    </div>
                  ))}
                </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
 
       </div>
