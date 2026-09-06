@@ -13,6 +13,8 @@
     "@hookform/resolvers": "^5.9.1",
     "framer-motion": "^13.2.0",
     "lucide-react": "^1.31.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-hook-form": "^7.87.0",
     "react-router-dom": "^7.18.3",
     "zod": "^3.22.4"
@@ -20,6 +22,8 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.13.3",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
     "@vitejs/plugin-react": "^6.1.0",
     "autoprefixer": "^10.5.5",
     "oxlint": "^1.79.0",
