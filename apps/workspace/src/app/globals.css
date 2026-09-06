@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
 * {
   box-sizing: border-box;
   margin: 0;
