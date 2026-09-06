@@ -13,7 +13,7 @@ const ACTOR_COLOR: Record<ActorType, string> = {
   Admin: '#A78BFA', Doctor: '#34D399', Patient: '#60A5FA', System: '#94A3B8',
 };
 const CAT_ICON: Record<AuditCategory, string> = {
-  Auth: '🔐', Tenant: '🏥', Billing: '💳', CarePass: '🛡️', System: '⚙️', Security: '🚨',
+  Auth: 'AUTH', Tenant: 'TNT', Billing: 'BILL', CarePass: 'PASS', System: 'SYS', Security: 'SEC',
 };
 
 function downloadCSV(rows: ReturnType<typeof useControlAuth>['auditEvents']) {

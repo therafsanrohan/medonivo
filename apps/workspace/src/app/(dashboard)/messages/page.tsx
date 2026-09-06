@@ -135,7 +135,7 @@ export default function MessagesPage() {
                   )}
                 </div>
                 <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full">
-                  ✓ Verified Patient
+                  Verified Patient
                 </span>
               </div>
 

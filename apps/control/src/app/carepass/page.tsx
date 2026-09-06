@@ -120,15 +120,15 @@ export default function CarePassPage() {
             <tbody>
               {[
                 { label: 'Lab Discount', values: carePassPlans.map(p => `${p.labDiscountPct}%`) },
-                { label: 'Specialist Access', values: carePassPlans.map(p => p.specialistAccess ? '✓' : '—') },
+                { label: 'Specialist Access', values: carePassPlans.map(p => p.specialistAccess ? 'Yes' : '—') },
                 { label: 'Family Members', values: carePassPlans.map(p => String(p.familyMembers)) },
-                { label: 'Emergency Cover', values: carePassPlans.map(p => p.emergencyCover ? '✓' : '—') },
+                { label: 'Emergency Cover', values: carePassPlans.map(p => p.emergencyCover ? 'Yes' : '—') },
                 { label: 'Teleconsult Sessions', values: carePassPlans.map(p => p.teleconsultSessions === 99 ? 'Unlimited' : String(p.teleconsultSessions)) },
               ].map((row, ri) => (
                 <tr key={row.label} style={{ borderBottom: ri < 4 ? '1px solid #1A2540' : 'none', backgroundColor: ri % 2 === 0 ? 'transparent' : '#0D152622' }}>
                   <td style={{ padding: '11px 20px', color: '#94A3B8', fontWeight: 500 }}>{row.label}</td>
                   {row.values.map((v, vi) => (
-                    <td key={vi} style={{ padding: '11px 16px', textAlign: 'center', color: v === '—' ? '#334155' : '#F1F5F9', fontWeight: v === '✓' ? 700 : 400 }}>
+                    <td key={vi} style={{ padding: '11px 16px', textAlign: 'center', color: v === '—' ? '#334155' : '#F1F5F9', fontWeight: v === 'Yes' ? 700 : 400 }}>
                       {v}
                     </td>
                   ))}

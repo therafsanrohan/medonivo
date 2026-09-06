@@ -66,7 +66,7 @@ export function EmergencyCard({ member }: EmergencyCardProps) {
               <div className="flex flex-wrap gap-1.5 mt-1">
                 {member.allergies.map((alg) => (
                   <span key={alg} className="text-xs bg-red-500/50 text-white font-semibold px-2.5 py-0.5 rounded-md border border-white/20">
-                    ⚠️ {alg}
+                    {alg}
                   </span>
                 ))}
               </div>

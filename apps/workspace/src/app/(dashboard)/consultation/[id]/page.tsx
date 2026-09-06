@@ -142,7 +142,7 @@ export default function ConsultationPage() {
             <div className="flex gap-1.5">
               {patient.allergies.map((alg) => (
                 <span key={alg} className="bg-red-500/30 text-red-100 border border-red-400/40 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  ⚠️ {alg}
+                  {alg}
                 </span>
               ))}
             </div>

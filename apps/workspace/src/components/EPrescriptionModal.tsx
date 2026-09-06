@@ -38,7 +38,7 @@ export function EPrescriptionModal({
             onClick={onClose}
             className="text-white hover:text-emerald-100 font-black text-sm"
           >
-            ✕
+            Close
           </button>
         </div>
 
@@ -148,7 +148,7 @@ export function EPrescriptionModal({
               <div className="flex flex-wrap gap-2">
                 {consultation.recommendedTests.map((t) => (
                   <span key={t} className="bg-white text-sky-800 border border-sky-300 font-bold px-3 py-1 rounded-xl text-xs">
-                    ✓ {t}
+                    {t}
                   </span>
                 ))}
               </div>
@@ -180,7 +180,7 @@ export function EPrescriptionModal({
             onClick={handlePrint}
             className="px-5 py-2.5 rounded-xl border border-gray-300 text-slate-700 font-bold text-xs hover:bg-gray-100 transition"
           >
-            🖨️ Print Prescription
+            Print Prescription
           </button>
           <button
             onClick={onClose}

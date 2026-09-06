@@ -31,7 +31,7 @@ export function PatientSummaryModal({ patient, onClose, onStartConsultation }: P
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition font-bold"
           >
-            ✕
+            <XIcon size={16} />
           </button>
         </div>
 
@@ -93,7 +93,7 @@ export function PatientSummaryModal({ patient, onClose, onStartConsultation }: P
                     {patient.allergies.length > 0 ? (
                       patient.allergies.map((alg) => (
                         <span key={alg} className="text-[11px] bg-red-600 text-white font-bold px-2 py-0.5 rounded">
-                          ⚠️ {alg}
+                          {alg}
                         </span>
                       ))
                     ) : (
@@ -147,7 +147,7 @@ export function PatientSummaryModal({ patient, onClose, onStartConsultation }: P
                   30-Day CareLoop tracking daily blood pressure logs, anti-platelet compliance, and cardiology review.
                 </p>
                 <div className="bg-white/80 p-2.5 rounded-xl text-[11px] text-gray-700 border border-emerald-100">
-                  📌 <strong>Next Milestone:</strong> Serum Creatinine &amp; Lipid Profile test scheduled for 2026-09-10.
+                  <strong>Next Milestone:</strong> Serum Creatinine &amp; Lipid Profile test scheduled for 2026-09-10.
                 </div>
               </div>
 

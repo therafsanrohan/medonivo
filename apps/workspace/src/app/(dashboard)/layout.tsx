@@ -63,9 +63,9 @@ function SidebarNav() {
             onChange={(e) => setChamberStatus(e.target.value as any)}
             className="w-full mt-3 p-1.5 rounded-xl bg-slate-900 text-slate-200 border border-slate-700 text-xs font-semibold outline-none"
           >
-            <option value="in_chamber">🟢 Active In Chamber</option>
-            <option value="on_break">🟡 On Break</option>
-            <option value="offline">🔴 Offline / Closed</option>
+            <option value="in_chamber">Active In Chamber</option>
+            <option value="on_break">On Break</option>
+            <option value="offline">Offline / Closed</option>
           </select>
         </div>
 

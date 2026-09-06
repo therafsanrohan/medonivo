@@ -95,7 +95,7 @@ export default function ReportsPage() {
               <span className={`text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider shrink-0 ${
                 report.status === 'reviewed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
               }`}>
-                {report.status === 'reviewed' ? '✓ Reviewed' : 'Pending Review'}
+                {report.status === 'reviewed' ? 'Reviewed' : 'Pending Review'}
               </span>
             </div>
 

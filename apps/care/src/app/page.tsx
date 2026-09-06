@@ -39,7 +39,7 @@ export default function CareHomePage() {
               {activeMember.carePassPlan}
             </span>
             <h1 className="text-2xl font-bold tracking-tight">
-              Welcome back, {activeMember.name} 👋
+              Welcome back, {activeMember.name}
             </h1>
             <p className="text-xs text-sky-100/90 mt-1 max-w-lg leading-relaxed">
               Included consultations remaining: <strong className="text-amber-300 font-bold">{activeMember.includedConsultations} Free Slots</strong> this month with <strong className="text-emerald-300">{activeMember.diagnosticDiscountPercent}% off</strong> diagnostic tests.
