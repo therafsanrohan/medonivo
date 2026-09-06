@@ -19,7 +19,7 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl;
+    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl;
   }
   
   .bg-mesh {

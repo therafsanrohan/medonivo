@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, CalendarCheck, Clock, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function NextActionSection() {
   return (
@@ -45,9 +46,9 @@ export function NextActionSection() {
                     <p className="text-sm text-mutedText">Dr. Shania Esha • General Checkup</p>
                   </div>
                 </div>
-                <button className="text-sm font-semibold text-white bg-warning hover:bg-yellow-600 px-4 py-2 rounded-lg transition">
+                <Link to="/demo" className="text-sm font-semibold text-white bg-warning hover:bg-yellow-600 px-4 py-2 rounded-lg transition">
                   Book Now
-                </button>
+                </Link>
               </div>
 
               {/* Normal Priority Action */}
@@ -61,9 +62,9 @@ export function NextActionSection() {
                     <p className="text-sm text-mutedText">Test completed yesterday</p>
                   </div>
                 </div>
-                <button className="text-sm font-semibold text-primary-blue bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition">
+                <Link to="/demo" className="text-sm font-semibold text-primary-blue bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition">
                   Upload
-                </button>
+                </Link>
               </div>
 
               {/* Lower Priority Action */}

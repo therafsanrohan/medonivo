@@ -111,7 +111,7 @@ export function RolesPreviewSection() {
                          <p className="text-xs text-mutedText">Cardiology</p>
                        </div>
                      </div>
-                     <button className="text-xs font-semibold text-primary-blue bg-blue-50/70 backdrop-blur-sm px-3 py-1.5 rounded hover:bg-blue-100 transition-colors">Review</button>
+                     <Link to="/demo?role=org" className="text-xs font-semibold text-primary-blue bg-blue-50/70 backdrop-blur-sm px-3 py-1.5 rounded hover:bg-blue-100 transition-colors">Review</Link>
                    </div>
                  ))}
                </div>

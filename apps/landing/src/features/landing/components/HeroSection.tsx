@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Activity, Calendar, FileText } from 'lucide-react';
 import { motion, type Variants } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export function HeroSection() {
   const containerVariants: Variants = {
@@ -22,8 +23,8 @@ export function HeroSection() {
     <section className="relative overflow-hidden bg-background pt-24 pb-32">
       {/* Background abstract gradient/glass effect */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-primary-blue/10 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-secondary-cyan/10 blur-3xl" />
+        <div className="absolute top-0 right-0 h-96 w-[80vw] md:w-96 rounded-full bg-primary-blue/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-96 w-[80vw] md:w-96 rounded-full bg-secondary-cyan/10 blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:flex lg:items-center lg:gap-12">
@@ -41,13 +42,13 @@ export function HeroSection() {
             Medonivo connects prescriptions, medicines, tests, reports, reviews, and follow-ups into a clear, continuous care journey.
           </motion.p>
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
-            <button className="group flex items-center justify-center gap-2 rounded-full bg-primary-blue px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+            <Link to="/demo" className="group flex items-center justify-center gap-2 rounded-full bg-primary-blue px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
               Try Medonivo
               <ArrowRight className="h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
-            <button className="flex items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white px-8 py-3.5 text-base font-semibold text-mainText hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-0.5">
+            </Link>
+            <a href="#careloop" className="flex items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white px-8 py-3.5 text-base font-semibold text-mainText hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-0.5">
               See How CareLoop Works
-            </button>
+            </a>
           </motion.div>
         </motion.div>
 

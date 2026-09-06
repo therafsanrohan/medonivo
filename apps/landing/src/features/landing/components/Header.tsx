@@ -39,7 +39,7 @@ export function Header() {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-white/40 bg-white/80 backdrop-blur-xl">
+        <div className="md:hidden absolute w-full left-0 top-[100%] border-t border-white/40 bg-white/95 backdrop-blur-3xl shadow-lg pb-4">
           <nav className="flex flex-col space-y-4 p-6 text-sm font-medium">
             <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)}>How It Works</a>
             <a href="#careloop" onClick={() => setIsMobileMenuOpen(false)}>CareLoop</a>

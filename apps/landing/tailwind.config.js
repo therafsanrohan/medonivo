@@ -18,7 +18,7 @@ export default {
         danger: '#EF4444',
         background: '#F8FAFC',
         mainText: '#0F172A',
-        mutedText: '#64748B',
+        mutedText: '#475569',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
