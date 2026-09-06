@@ -6,9 +6,28 @@
     --foreground: #0F172A;
   }
   
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl;
+  }
+  
+  .bg-mesh {
+    background-color: #ffffff;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(217,100%,92%,1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(253,100%,94%,1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(189,100%,92%,1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(339,100%,96%,1) 0px, transparent 50%);
   }
 }

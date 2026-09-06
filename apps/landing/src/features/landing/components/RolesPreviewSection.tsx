@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export function RolesPreviewSection() {
   return (
-    <section id="doctors" className="py-24 bg-background overflow-hidden">
+    <section id="doctors" className="py-24 bg-transparent overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         
         {/* Doctor Experience */}
@@ -18,12 +18,12 @@ export function RolesPreviewSection() {
             transition={{ duration: 0.6 }}
           >
             <motion.div 
-              className="bg-white rounded-3xl p-6 shadow-xl border border-gray-200"
+              className="glass-card rounded-3xl p-6 shadow-xl"
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
                {/* Doctor UI Mockup */}
-               <div className="flex items-center justify-between border-b pb-4 mb-4">
+               <div className="flex items-center justify-between border-b border-white/30 pb-4 mb-4">
                  <div className="flex items-center gap-3">
                    <div className="h-10 w-10 bg-primary-blue rounded-full text-white flex items-center justify-center font-bold">Dr</div>
                    <div>
@@ -33,9 +33,9 @@ export function RolesPreviewSection() {
                  </div>
                </div>
                <div className="space-y-3">
-                 <div className="h-8 bg-gray-100 rounded w-1/3"></div>
-                 <div className="h-24 bg-gray-50 rounded border border-gray-100"></div>
-                 <div className="h-12 bg-blue-50 rounded border border-blue-100 mt-4"></div>
+                 <div className="h-8 bg-white/50 backdrop-blur-sm rounded w-1/3"></div>
+                 <div className="h-24 bg-white/40 backdrop-blur-sm rounded border border-white/50"></div>
+                 <div className="h-12 bg-blue-50/70 backdrop-blur-sm rounded border border-blue-100 mt-4"></div>
                </div>
             </motion.div>
           </motion.div>
@@ -47,7 +47,7 @@ export function RolesPreviewSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-primary-blue text-sm font-semibold mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/50 backdrop-blur-md text-primary-blue text-sm font-semibold mb-6">
               <Stethoscope className="h-4 w-4" /> For Doctors
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-mainText sm:text-4xl mb-6">
@@ -71,7 +71,7 @@ export function RolesPreviewSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
           >
-             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-sm font-semibold mb-6">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100/50 backdrop-blur-md text-teal-700 text-sm font-semibold mb-6">
               <Building2 className="h-4 w-4" /> For Medical Organizations
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-mainText sm:text-4xl mb-6">
@@ -93,25 +93,25 @@ export function RolesPreviewSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <motion.div 
-              className="bg-white rounded-3xl p-6 shadow-xl border border-gray-200"
+              className="glass-card rounded-3xl p-6 shadow-xl"
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
                {/* Org UI Mockup */}
-               <div className="flex items-center justify-between border-b pb-4 mb-4">
+               <div className="flex items-center justify-between border-b border-white/30 pb-4 mb-4">
                  <p className="font-semibold text-mainText">Pending Verification (3)</p>
                </div>
                <div className="space-y-4">
                  {[1, 2].map((i) => (
-                   <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                   <div key={i} className="flex items-center justify-between p-3 bg-white/40 backdrop-blur-sm rounded-lg border border-white/50">
                      <div className="flex items-center gap-3">
-                       <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+                       <div className="h-8 w-8 bg-white/60 rounded-full"></div>
                        <div>
                          <p className="font-semibold text-sm text-mainText">Dr. Specialist {i}</p>
                          <p className="text-xs text-mutedText">Cardiology</p>
                        </div>
                      </div>
-                     <button className="text-xs font-semibold text-primary-blue bg-blue-50 px-3 py-1.5 rounded hover:bg-blue-100 transition-colors">Review</button>
+                     <button className="text-xs font-semibold text-primary-blue bg-blue-50/70 backdrop-blur-sm px-3 py-1.5 rounded hover:bg-blue-100 transition-colors">Review</button>
                    </div>
                  ))}
                </div>

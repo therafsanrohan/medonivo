@@ -47,7 +47,7 @@ export function FeaturesSection() {
   };
 
   return (
-    <section id="features" className="py-24 bg-gray-50 overflow-hidden">
+    <section id="features" className="py-24 bg-transparent overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         <motion.div 
           className="text-center mb-16"
@@ -75,7 +75,7 @@ export function FeaturesSection() {
             <motion.div 
               key={feature.name} 
               variants={itemVariants}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="glass-card rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:bg-white/70"
             >
               <div className="h-12 w-12 rounded-xl bg-primary-blue/10 flex items-center justify-center text-primary-blue mb-6">
                 <feature.icon className="h-6 w-6" />

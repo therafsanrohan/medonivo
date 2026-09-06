@@ -13,7 +13,7 @@ export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-24 bg-gray-50 border-t border-gray-100 overflow-hidden">
+    <section id="faq" className="py-24 bg-transparent border-t border-white/20 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:flex lg:gap-16">
         
         {/* Security Info */}
@@ -24,7 +24,7 @@ export function FAQSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-green-100 text-success mb-6">
+          <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-green-100/50 backdrop-blur-md text-success mb-6">
             <ShieldCheck className="h-6 w-6" />
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-mainText mb-4">
@@ -47,7 +47,7 @@ export function FAQSection() {
             {faqs.map((faq, index) => (
               <div 
                 key={index} 
-                className={`bg-white border rounded-2xl overflow-hidden transition-all duration-200 ${openIndex === index ? 'border-primary-blue shadow-md' : 'border-gray-200 hover:border-gray-300'}`}
+                className={`glass-card rounded-2xl overflow-hidden transition-all duration-200 ${openIndex === index ? 'border-primary-blue shadow-lg bg-white/70' : 'border-white/40 hover:border-white/60'}`}
               >
                 <button
                   className="w-full flex items-center justify-between p-6 text-left"

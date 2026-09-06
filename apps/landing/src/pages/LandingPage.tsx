@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { HeroSection } from '../features/landing/components/HeroSection';
 import { CareLoopSection } from '../features/landing/components/CareLoopSection';
 import { FeaturesSection } from '../features/landing/components/FeaturesSection';
@@ -9,7 +10,7 @@ import { FAQSection } from '../features/landing/components/FAQSection';
 
 export function LandingPage() {
   return (
-    <div className="w-full">
+    <div className="w-full bg-mesh relative text-foreground selection:bg-primary-blue/30 overflow-x-hidden">
       <HeroSection />
       <CareLoopSection />
       <NextActionSection />
@@ -25,12 +26,18 @@ export function LandingPage() {
             Healthcare should move forward, not get lost between visits.
           </h2>
           <div className="flex justify-center gap-4">
-            <button className="bg-white text-primary-blue px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">
+            <Link 
+              to="/demo" 
+              className="bg-white text-primary-blue px-8 py-3 rounded-full font-semibold hover:bg-gray-100 hover:scale-105 transition-all shadow-lg"
+            >
               Try Medonivo
-            </button>
-            <button className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition">
+            </Link>
+            <Link 
+              to="/login" 
+              className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 hover:scale-105 transition-all"
+            >
               Sign In
-            </button>
+            </Link>
           </div>
         </div>
       </section>

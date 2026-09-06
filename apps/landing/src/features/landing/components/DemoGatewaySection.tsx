@@ -12,7 +12,7 @@ export function DemoGatewaySection() {
   ];
 
   return (
-    <section className="py-24 bg-white border-t border-gray-100 text-center overflow-hidden">
+    <section className="py-24 bg-transparent border-t border-white/20 text-center overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ export function DemoGatewaySection() {
             >
               <Link 
                 to={role.route}
-                className="flex flex-col items-center p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:border-gray-300 hover:bg-gray-100 hover:shadow-lg transition-all duration-300 group h-full"
+                className="flex flex-col items-center p-8 glass-card hover:bg-white/70 rounded-2xl transition-all duration-300 group h-full hover:-translate-y-1"
               >
                 <div className={`h-16 w-16 rounded-full flex items-center justify-center text-white mb-6 transition-transform group-hover:scale-110 ${role.color}`}>
                   <role.icon className="h-8 w-8" />
