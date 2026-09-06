@@ -1,167 +1,107 @@
+'use client';
+
 import React from 'react';
 import './globals.css';
-import { StethoscopeIcon, UserIcon, CalendarIcon, FileTextIcon, BellIcon, HomeIcon } from '@medonivo/icons';
-import { tokens } from '@medonivo/design-tokens';
+import { StethoscopeIcon, UserIcon, CalendarIcon, FileTextIcon, BellIcon, HomeIcon, ShieldCheckIcon, AlertCircleIcon, PlusIcon } from '@medonivo/icons';
+import { PatientAuthProvider, usePatientAuth } from '../context/PatientAuthContext';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-import { ErrorBoundary } from '../components/ErrorBoundary';
+function NavigationHeader() {
+  const { members, activeMemberId, setActiveMemberId, activeMember, needsAttentionCount } = usePatientAuth();
 
-export const metadata = {
-  title: 'Medonivo Care - Patient & Family Health Portal',
-  description: 'Your intelligent personal and family health companion'
-};
+  return (
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40 shadow-xs">
+      <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2 font-bold text-sky-900 text-lg tracking-tight">
+          <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-sm">
+            <StethoscopeIcon size={20} />
+          </div>
+          <span>Medonivo Care</span>
+        </Link>
+      </div>
+
+      {/* Family Member Profile Selector Dropdown */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-3 py-1">
+          <UserIcon size={16} className="text-sky-600" />
+          <select
+            value={activeMemberId}
+            onChange={(e) => setActiveMemberId(e.target.value)}
+            className="bg-transparent text-xs font-bold text-gray-800 outline-none cursor-pointer pr-1"
+          >
+            {members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name} ({m.relation})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Link
+          href="/emergency"
+          className="relative p-2 text-red-600 hover:bg-red-50 rounded-full transition"
+          title="Emergency Health Card"
+        >
+          <ShieldCheckIcon size={20} />
+        </Link>
+
+        {needsAttentionCount > 0 && (
+          <span className="flex h-3 w-3 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+          </span>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function BottomNavbar() {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: '/', label: 'Home', icon: HomeIcon },
+    { href: '/careloops', label: 'CareLoops', icon: StethoscopeIcon },
+    { href: '/doctors', label: 'Doctors', icon: CalendarIcon },
+    { href: '/medicines', label: 'Medicines', icon: AlertCircleIcon },
+    { href: '/records', label: 'Records', icon: FileTextIcon },
+    { href: '/family', label: 'Family', icon: UserIcon }
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 flex justify-around items-center z-40 shadow-lg">
+      {navItems.map((item) => {
+        const Icon = item.icon;
+        const isActive = pathname === item.href;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition ${
+              isActive ? 'text-sky-600 font-bold' : 'text-gray-500 hover:text-gray-800'
+            }`}
+          >
+            <Icon size={20} className={isActive ? 'scale-110 transition-transform' : ''} />
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          backgroundColor: tokens.colors.neutral[50],
-          fontFamily: tokens.typography.fontFamily
-        }}
-      >
-        {/* Header */}
-        <header
-          style={{
-            height: '60px',
-            backgroundColor: '#FFFFFF',
-            borderBottom: `1px solid ${tokens.colors.neutral[200]}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 20px',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.xs }}>
-            <StethoscopeIcon size={24} color={tokens.colors.brand[600]} />
-            <span
-              style={{
-                fontSize: tokens.typography.fontSize.lg,
-                fontWeight: tokens.typography.fontWeight.bold,
-                color: tokens.colors.brand[900],
-                letterSpacing: '-0.3px'
-              }}
-            >
-              Medonivo Care
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
-            <button
-              aria-label="Notifications"
-              style={{ border: 'none', background: 'none', cursor: 'pointer', color: tokens.colors.neutral[500] }}
-            >
-              <BellIcon size={20} />
-            </button>
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: tokens.borderRadius.full,
-                backgroundColor: tokens.colors.brand[100],
-                color: tokens.colors.brand[600],
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: tokens.typography.fontWeight.semibold,
-                fontSize: tokens.typography.fontSize.xs
-              }}
-            >
-              PT
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content Area */}
-        <main style={{ flex: 1, paddingBottom: '70px', maxWidth: '1024px', margin: '0 auto', width: '100%' }}>
-          <ErrorBoundary>
+      <body className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased flex flex-col">
+        <PatientAuthProvider>
+          <NavigationHeader />
+          <main className="flex-1 pb-20 max-w-4xl mx-auto w-full p-4 sm:p-6">
             {children}
-          </ErrorBoundary>
-        </main>
-
-        {/* Responsive Mobile Bottom Navigation */}
-        <nav
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '60px',
-            backgroundColor: '#FFFFFF',
-            borderTop: `1px solid ${tokens.colors.neutral[200]}`,
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            zIndex: 100
-          }}
-        >
-          <a
-            href="#"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              color: tokens.colors.brand[600],
-              fontSize: '11px',
-              gap: '2px',
-              fontWeight: tokens.typography.fontWeight.semibold,
-              textDecoration: 'none'
-            }}
-          >
-            <HomeIcon size={20} />
-            <span>Home</span>
-          </a>
-          <a
-            href="#"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              color: tokens.colors.neutral[500],
-              fontSize: '11px',
-              gap: '2px',
-              textDecoration: 'none'
-            }}
-          >
-            <CalendarIcon size={20} />
-            <span>Appointments</span>
-          </a>
-          <a
-            href="#"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              color: tokens.colors.neutral[500],
-              fontSize: '11px',
-              gap: '2px',
-              textDecoration: 'none'
-            }}
-          >
-            <FileTextIcon size={20} />
-            <span>Reports</span>
-          </a>
-          <a
-            href="#"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              color: tokens.colors.neutral[500],
-              fontSize: '11px',
-              gap: '2px',
-              textDecoration: 'none'
-            }}
-          >
-            <UserIcon size={20} />
-            <span>Family</span>
-          </a>
-        </nav>
+          </main>
+          <BottomNavbar />
+        </PatientAuthProvider>
       </body>
     </html>
   );

@@ -1,195 +1,125 @@
-import React from 'react';
+'use client';
 
+import React from 'react';
+import { DoctorAuthProvider, useDoctorAuth } from '../../context/DoctorAuthContext';
 import {
-  BuildingIcon,
+  StethoscopeIcon,
+  UserIcon,
   CalendarIcon,
   FileTextIcon,
-  UserIcon,
-  StethoscopeIcon,
   BellIcon,
-  ShieldCheckIcon
+  HomeIcon,
+  ShieldCheckIcon,
+  AlertCircleIcon,
+  ClockIcon
 } from '@medonivo/icons';
-import { tokens } from '@medonivo/design-tokens';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
+function SidebarNav() {
+  const pathname = usePathname();
+  const { doctor, setChamberStatus, pendingReports, messages } = useDoctorAuth();
+
+  const unreadMessagesCount = messages.reduce((acc, m) => acc + m.unreadCount, 0);
+  const pendingReportsCount = pendingReports.filter((r) => r.status === 'pending_review').length;
+
+  const navItems = [
+    { href: '/', label: 'Live Queue & Home', icon: HomeIcon },
+    { href: '/careloops', label: 'Patient CareLoops', icon: StethoscopeIcon },
+    { href: '/reports', label: 'Report Reviews', icon: FileTextIcon, badge: pendingReportsCount },
+    { href: '/messages', label: 'Patient Messages', icon: AlertCircleIcon, badge: unreadMessagesCount },
+    { href: '/availability', label: 'Chamber Schedule', icon: CalendarIcon }
+  ];
+
+  return (
+    <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between shrink-0 min-h-screen">
+      <div>
+        {/* Workspace Brand Logo */}
+        <div className="p-6 border-b border-slate-800 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-2xl bg-sky-600 flex items-center justify-center font-bold text-white shadow-md">
+            <StethoscopeIcon size={22} />
+          </div>
+          <div>
+            <span className="font-extrabold text-base tracking-tight text-white block">Medonivo Clinical</span>
+            <span className="text-[10px] text-sky-400 font-semibold uppercase tracking-wider block">Doctor Workspace</span>
+          </div>
+        </div>
+
+        {/* Doctor Chamber Status Card */}
+        <div className="p-4 m-4 bg-slate-800/80 rounded-2xl border border-slate-700">
+          <div className="flex items-center gap-2 mb-2">
+            <span className={`w-2.5 h-2.5 rounded-full ${
+              doctor.chamberStatus === 'in_chamber' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+            }`} />
+            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+              {doctor.chamberStatus.replace('_', ' ')}
+            </span>
+          </div>
+          <p className="text-xs font-bold text-white truncate">{doctor.name}</p>
+          <p className="text-[10px] text-slate-400 truncate mt-0.5">{doctor.currentBranch}</p>
+
+          <select
+            value={doctor.chamberStatus}
+            onChange={(e) => setChamberStatus(e.target.value as any)}
+            className="w-full mt-3 p-1.5 rounded-xl bg-slate-900 text-slate-200 border border-slate-700 text-xs font-semibold outline-none"
+          >
+            <option value="in_chamber">🟢 Active In Chamber</option>
+            <option value="on_break">🟡 On Break</option>
+            <option value="offline">🔴 Offline / Closed</option>
+          </select>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="px-3 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition ${
+                  isActive
+                    ? 'bg-sky-600 text-white font-bold shadow-md'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                </div>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className="text-[10px] font-black bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-slate-800 text-[11px] text-slate-500 text-center">
+        {doctor.regNumber} • Medonivo v2.4
+      </div>
+    </aside>
+  );
+}
 
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-      }}
-    >
-        {/* Desktop / Tablet Side Navigation */}
-        <aside
-          style={{
-            width: '240px',
-            backgroundColor: tokens.colors.neutral[900],
-            color: tokens.colors.neutral[50],
-            display: 'flex',
-            flexDirection: 'column',
-            flexShrink: 0
-          }}
-        >
-          {/* Logo & Tenant Header */}
-          <div
-            style={{
-              padding: '18px 20px',
-              borderBottom: `1px solid ${tokens.colors.neutral[800]}`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: tokens.spacing.xs
-            }}
-          >
-            <StethoscopeIcon size={24} color={tokens.colors.brand[500]} />
-            <div>
-              <span style={{ fontSize: tokens.typography.fontSize.base, fontWeight: tokens.typography.fontWeight.bold, color: '#FFFFFF', display: 'block', lineHeight: 1.2 }}>
-                Medonivo OS
-              </span>
-              <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[400] }}>Square Hospitals Ltd.</span>
-            </div>
+    <html lang="en">
+      <body className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased flex">
+        <DoctorAuthProvider>
+          <div className="flex w-full min-h-screen">
+            <SidebarNav />
+            <main className="flex-1 p-6 max-w-6xl mx-auto overflow-y-auto">
+              {children}
+            </main>
           </div>
-
-          {/* Navigation Links */}
-          <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <a
-              href="#"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '10px 12px',
-                borderRadius: tokens.borderRadius.md,
-                backgroundColor: tokens.colors.neutral[800],
-                color: tokens.colors.brand[500],
-                fontSize: tokens.typography.fontSize.sm,
-                fontWeight: tokens.typography.fontWeight.semibold,
-                textDecoration: 'none'
-              }}
-            >
-              <CalendarIcon size={18} />
-              <span>Reception & Queue</span>
-            </a>
-
-            <a
-              href="#"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '10px 12px',
-                borderRadius: tokens.borderRadius.md,
-                color: tokens.colors.neutral[400],
-                fontSize: tokens.typography.fontSize.sm,
-                fontWeight: tokens.typography.fontWeight.medium,
-                textDecoration: 'none'
-              }}
-            >
-              <UserIcon size={18} />
-              <span>Patients</span>
-            </a>
-
-            <a
-              href="#"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '10px 12px',
-                borderRadius: tokens.borderRadius.md,
-                color: tokens.colors.neutral[400],
-                fontSize: tokens.typography.fontSize.sm,
-                fontWeight: tokens.typography.fontWeight.medium,
-                textDecoration: 'none'
-              }}
-            >
-              <StethoscopeIcon size={18} />
-              <span>Doctors & Schedules</span>
-            </a>
-
-            <a
-              href="#"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '10px 12px',
-                borderRadius: tokens.borderRadius.md,
-                color: tokens.colors.neutral[400],
-                fontSize: tokens.typography.fontSize.sm,
-                fontWeight: tokens.typography.fontWeight.medium,
-                textDecoration: 'none'
-              }}
-            >
-              <FileTextIcon size={18} />
-              <span>Diagnostics & Lab</span>
-            </a>
-
-            <a
-              href="#"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '10px 12px',
-                borderRadius: tokens.borderRadius.md,
-                color: tokens.colors.neutral[400],
-                fontSize: tokens.typography.fontSize.sm,
-                fontWeight: tokens.typography.fontWeight.medium,
-                textDecoration: 'none'
-              }}
-            >
-              <ShieldCheckIcon size={18} />
-              <span>CarePass Verify</span>
-            </a>
-          </nav>
-
-          {/* Branch Info Footer */}
-          <div style={{ padding: '16px', borderTop: `1px solid ${tokens.colors.neutral[800]}`, fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[500] }}>
-            <div style={{ fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[300] }}>Branch: Central Dhaka</div>
-            <div>Shift: Morning (08:00 - 16:00)</div>
-          </div>
-        </aside>
-
-        {/* Main Content Viewport */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
-          {/* Top Bar */}
-          <header
-            style={{
-              height: '60px',
-              backgroundColor: '#FFFFFF',
-              borderBottom: `1px solid ${tokens.colors.neutral[200]}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0 24px'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.xs }}>
-              <BuildingIcon size={18} color={tokens.colors.neutral[500]} />
-              <span style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[700] }}>
-                Branch: Main Campus (Dhaka Central)
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
-              <button aria-label="Notifications" style={{ border: 'none', background: 'none', cursor: 'pointer', color: tokens.colors.neutral[500] }}>
-                <BellIcon size={20} />
-              </button>
-              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.xs }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: tokens.borderRadius.full, backgroundColor: tokens.colors.neutral[100], color: tokens.colors.neutral[700], display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: tokens.typography.fontWeight.semibold, fontSize: tokens.typography.fontSize.xs }}>
-                  DR
-                </div>
-                <div style={{ fontSize: tokens.typography.fontSize.xs }}>
-                  <div style={{ fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>Dr. Tanvir Rahman</div>
-                  <div style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[500] }}>Medical Practitioner</div>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <main style={{ flex: 1, padding: tokens.spacing.lg }}>{children}</main>
-        </div>
-    </div>
+        </DoctorAuthProvider>
+      </body>
+    </html>
   );
 }

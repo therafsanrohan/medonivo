@@ -1,151 +1,163 @@
 'use client';
 
-import React from 'react';
-import { Button, Card } from '@medonivo/ui';
-import { BuildingIcon, ShieldCheckIcon, CalendarIcon } from '@medonivo/icons';
-import { tokens } from '@medonivo/design-tokens';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useOrgAuth } from '../context/OrgAuthContext';
+import Link from 'next/link';
+import {
+  BuildingIcon,
+  UserIcon,
+  ShieldCheckIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  PlusIcon
+} from '@medonivo/icons';
 
-export default function LandingPage() {
-  const router = useRouter();
+export default function OrgOverviewPage() {
+  const {
+    hospitalName,
+    selectedBranch,
+    doctors,
+    credentialReviews,
+    departments,
+    branchSchedules
+  } = useOrgAuth();
+
+  const filteredDoctors = selectedBranch === 'All Campuses'
+    ? doctors
+    : doctors.filter((d) => d.branch.toLowerCase().includes(selectedBranch.toLowerCase().split(' ')[0]));
+
+  const activeDoctorsCount = filteredDoctors.filter((d) => d.status === 'active').length;
+  const pendingCredsCount = credentialReviews.filter((c) => c.status === 'pending').length;
+  const totalBeds = departments.reduce((acc, d) => acc + d.bedCapacity, 0);
 
   return (
-    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', color: tokens.colors.neutral[900] }}>
-      {/* Navigation */}
-      <nav style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '24px 8%',
-        borderBottom: `1px solid ${tokens.colors.neutral[200]}`,
-        position: 'sticky',
-        top: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(10px)',
-        zIndex: 100
-      }}>
-        <div style={{ fontSize: '24px', fontWeight: 700, color: tokens.colors.brand[700], letterSpacing: '-0.5px' }}>
-          Medonivo
-        </div>
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <a href="#features" style={{ textDecoration: 'none', color: tokens.colors.neutral[600], fontWeight: 500 }}>Features</a>
-          <a href="#about" style={{ textDecoration: 'none', color: tokens.colors.neutral[600], fontWeight: 500 }}>About</a>
-          <Button variant="primary" onClick={() => window.location.href = 'http://localhost:3001/login'}>
-            Staff Login
-          </Button>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section style={{
-        padding: '120px 8%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        background: `linear-gradient(180deg, ${tokens.colors.neutral[50]} 0%, #ffffff 100%)`
-      }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '6px 16px',
-          backgroundColor: tokens.colors.brand[50],
-          color: tokens.colors.brand[700],
-          borderRadius: '99px',
-          fontSize: '14px',
-          fontWeight: 600,
-          marginBottom: '32px'
-        }}>
-          ✨ Next-Generation Health OS
-        </div>
-        <h1 style={{ 
-          fontSize: '64px', 
-          fontWeight: 800, 
-          lineHeight: 1.1, 
-          letterSpacing: '-1.5px',
-          maxWidth: '900px',
-          margin: '0 0 24px 0',
-          color: '#0F172A'
-        }}>
-          The Intelligent <br />
-          <span style={{ color: tokens.colors.brand[600] }}>Healthcare Platform</span>
-        </h1>
-        <p style={{
-          fontSize: '20px',
-          color: tokens.colors.neutral[500],
-          maxWidth: '600px',
-          lineHeight: 1.5,
-          margin: '0 0 48px 0'
-        }}>
-          One Patient. One Journey. Every Branch. Unify your hospital operations, digital queuing, and patient records in a single, lightning-fast platform.
-        </p>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <Button variant="primary" size="lg" onClick={() => window.location.href = 'http://localhost:3001/login'}>
-            Enter Workspace
-          </Button>
-          <Button variant="outline" size="lg">
-            Request Demo
-          </Button>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" style={{ padding: '80px 8%', backgroundColor: '#ffffff' }}>
-        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h2 style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-0.5px', margin: '0 0 16px 0' }}>
-            Built for Modern Hospitals
-          </h2>
-          <p style={{ fontSize: '18px', color: tokens.colors.neutral[500] }}>
-            Everything you need to run clinical operations seamlessly.
+    <div className="space-y-6">
+      {/* Top Header Banner */}
+      <div className="bg-gradient-to-r from-blue-900 via-slate-900 to-blue-950 text-white rounded-3xl p-6 shadow-md flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div>
+          <span className="text-[10px] font-black uppercase tracking-widest bg-blue-500/20 text-blue-300 border border-blue-400/30 px-3 py-1 rounded-full mb-2 inline-block">
+            Hospital Operations Command Center &bull; {selectedBranch}
+          </span>
+          <h1 className="text-2xl font-bold tracking-tight">{hospitalName}</h1>
+          <p className="text-xs text-blue-200 mt-1">
+            Managing 3 Multi-specialty Campuses &bull; 24 Clinical Chambers &bull; {doctors.length} Affiliated Physicians
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-          <Card style={{ padding: '32px' }}>
-            <div style={{ width: '48px', height: '48px', backgroundColor: tokens.colors.brand[50], color: tokens.colors.brand[600], borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-              <BuildingIcon size={24} />
-            </div>
-            <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px' }}>Multi-Branch Architecture</h3>
-            <p style={{ color: tokens.colors.neutral[500], lineHeight: 1.6 }}>
-              Route patients across different branches dynamically. Track performance and queues for Central, North, and South campuses globally.
-            </p>
-          </Card>
-
-          <Card style={{ padding: '32px' }}>
-            <div style={{ width: '48px', height: '48px', backgroundColor: tokens.colors.status.info.bg, color: tokens.colors.status.info.text, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-              <CalendarIcon size={24} />
-            </div>
-            <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px' }}>Live Patient Queues</h3>
-            <p style={{ color: tokens.colors.neutral[500], lineHeight: 1.6 }}>
-              Eliminate waiting room chaos. Digital check-ins and real-time consultation tracking keep doctors and patients in sync.
-            </p>
-          </Card>
-
-          <Card style={{ padding: '32px' }}>
-            <div style={{ width: '48px', height: '48px', backgroundColor: tokens.colors.status.success.bg, color: tokens.colors.status.success.text, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-              <ShieldCheckIcon size={24} />
-            </div>
-            <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px' }}>CarePass Verify</h3>
-            <p style={{ color: tokens.colors.neutral[500], lineHeight: 1.6 }}>
-              Secure identity and membership verification built-in. Recognize loyal patients and apply benefits instantly at the desk.
-            </p>
-          </Card>
+        <div className="flex gap-2">
+          <Link
+            href="/doctors"
+            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5"
+          >
+            + Invite Doctor
+          </Link>
+          <Link
+            href="/credentials"
+            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs border border-slate-700 transition"
+          >
+            Review Credentials ({pendingCredsCount})
+          </Link>
         </div>
-      </section>
+      </div>
 
-      {/* Footer */}
-      <footer style={{ backgroundColor: tokens.colors.neutral[900], color: tokens.colors.neutral[400], padding: '48px 8%', textAlign: 'center' }}>
-        <div style={{ fontSize: '24px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: '16px' }}>
-          Medonivo
+      {/* KPI Metrics Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Doctors on Duty</span>
+          <span className="text-2xl font-black text-gray-900 mt-1 block">{activeDoctorsCount} / {filteredDoctors.length}</span>
+          <span className="text-[10px] text-emerald-600 font-bold mt-1 block">✓ All chambers active</span>
         </div>
-        <p style={{ marginBottom: '24px' }}>© 2026 Medonivo Health Systems. All rights reserved.</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
-          <a href="#" style={{ color: tokens.colors.neutral[400], textDecoration: 'none' }}>Privacy Policy</a>
-          <a href="#" style={{ color: tokens.colors.neutral[400], textDecoration: 'none' }}>Terms of Service</a>
-          <a href="#" style={{ color: tokens.colors.neutral[400], textDecoration: 'none' }}>Security</a>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Check-ins Today</span>
+          <span className="text-2xl font-black text-blue-600 mt-1 block">366</span>
+          <span className="text-[10px] text-blue-600 font-bold mt-1 block">+14% vs yesterday</span>
         </div>
-      </footer>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Capacity Utilisation</span>
+          <span className="text-2xl font-black text-emerald-600 mt-1 block">82%</span>
+          <span className="text-[10px] text-gray-500 font-medium mt-1 block">Peak: 04:00 PM - 07:00 PM</span>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Pending Credentials</span>
+          <span className="text-2xl font-black text-amber-600 mt-1 block">{pendingCredsCount}</span>
+          <span className="text-[10px] text-amber-600 font-bold mt-1 block">Needs BMDC audit</span>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Hospital Bed Count</span>
+          <span className="text-2xl font-black text-slate-800 mt-1 block">{totalBeds} Beds</span>
+          <span className="text-[10px] text-gray-500 font-medium mt-1 block">Across 4 departments</span>
+        </div>
+      </div>
+
+      {/* Live Branch Status Grid */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <h2 className="text-base font-bold text-gray-900">Hospital Branch Activity Matrix</h2>
+          <span className="text-xs text-blue-600 font-bold">Live Auto-sync (30s)</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {branchSchedules.map((b) => (
+            <div key={b.branchName} className="bg-white rounded-3xl border border-gray-200 p-5 shadow-xs space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900">{b.branchName}</h3>
+                  <p className="text-xs text-gray-500">{b.location}</p>
+                </div>
+                <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                  b.status === 'normal' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                }`}>
+                  {b.status === 'normal' ? 'Normal' : 'High Traffic'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-gray-100">
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase font-bold block">Active Sessions</span>
+                  <strong className="text-gray-800">{b.activeSessions} Chambers</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase font-bold block">Checked-in Today</span>
+                  <strong className="text-blue-700">{b.checkedInToday} / {b.totalCapacityToday}</strong>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-2.5 rounded-xl text-[11px] text-gray-700 flex justify-between items-center">
+                <span>Avg Chamber Wait: <strong>{b.queueDelayMinutes} mins</strong></span>
+                <Link href="/operations" className="text-blue-600 font-bold hover:underline">Manage →</Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pending Credential Audit Warning Banner */}
+      {pendingCredsCount > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-800 flex items-center justify-center font-black text-lg shrink-0">
+              🪪
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-amber-950">Action Required: {pendingCredsCount} Doctor Credential Review Pending</h3>
+              <p className="text-xs text-amber-900">
+                Ensure all newly onboarded physicians have verified BMDC registration before granting chamber access.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/credentials"
+            className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shrink-0 shadow-xs"
+          >
+            Review Applications →
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

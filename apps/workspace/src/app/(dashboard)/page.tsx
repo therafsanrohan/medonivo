@@ -1,255 +1,202 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, Button, StatusBadge, Input } from '@medonivo/ui';
-import { mockWorkspaceMetrics, mockQueueList } from '../../fixtures/dev-fixtures';
-import { WalkInModal } from '../../components/WalkInModal';
-import { AppointmentModal } from '../../components/AppointmentModal';
-import { BillingModal } from '../../components/BillingModal';
-import { DiagnosticOrderModal } from '../../components/DiagnosticOrderModal';
-import { CarePassCardModal } from '../../components/CarePassCardModal';
-import { PrescriptionModal } from '../../components/PrescriptionModal';
-import { createClient } from '../../utils/supabase/client';
+import React, { useState } from 'react';
+import { useDoctorAuth } from '../../context/DoctorAuthContext';
+import { PatientSummaryModal } from '../../components/PatientSummaryModal';
+import { QueuePatient } from '../../fixtures/doctor-workspace-fixtures';
+import { useRouter } from 'next/navigation';
+import {
+  StethoscopeIcon,
+  SearchIcon,
+  UserIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  FileTextIcon,
+  PlusIcon
+} from '@medonivo/icons';
+import Link from 'next/link';
 
 export default function WorkspaceDashboardPage() {
-  const [isWalkInOpen, setWalkInOpen] = useState(false);
-  const [isAppointmentOpen, setAppointmentOpen] = useState(false);
-  const [isBillingOpen, setBillingOpen] = useState(false);
-  const [isDiagnosticOpen, setDiagnosticOpen] = useState(false);
-  const [isCarePassOpen, setCarePassOpen] = useState(false);
-  const [isPrescriptionOpen, setPrescriptionOpen] = useState(false);
+  const router = useRouter();
+  const { doctor, queue, callPatient, pendingReports, messages } = useDoctorAuth();
 
-  const [selectedPatient, setSelectedPatient] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [queue, setQueue] = useState<any[]>(mockQueueList);
-  const [metrics, setMetrics] = useState(mockWorkspaceMetrics);
+  const [selectedPatientForSummary, setSelectedPatientForSummary] = useState<QueuePatient | null>(null);
 
-  // Fetch queue from Supabase or Fallback API
-  useEffect(() => {
-    const supabase = createClient();
-    async function loadQueueData() {
-      try {
-        const { data } = await supabase
-          .from('queues')
-          .select('*');
+  const activeWaitingQueue = queue.filter((q) => q.queueStatus === 'waiting').length;
+  const inConsultationPatient = queue.find((q) => q.queueStatus === 'in_consultation');
+  const completedCount = queue.filter((q) => q.queueStatus === 'completed').length;
+  const pendingReportCount = pendingReports.filter((r) => r.status === 'pending_review').length;
 
-        if (data && data.length > 0) {
-          setQueue(data.map((q: any) => ({
-            id: q.id,
-            token: q.token,
-            patientName: q.patient_name || 'Patient',
-            mrnPhone: q.phone || 'N/A',
-            carePassStatus: 'active',
-            carePassLabel: 'Active',
-            queueStatus: q.status === 'waiting' ? 'info' : 'warning',
-            queueStatusLabel: q.status === 'waiting' ? 'Waiting in Chamber' : 'In Consultation'
-          })));
-        } else {
-          // Fallback to local API
-          fetch('http://localhost:4000/v1/queues/active')
-            .then(res => res.json())
-            .then(data => {
-              if (Array.isArray(data)) setQueue(data);
-            })
-            .catch(() => {
-              // Gracefully keep dev fixtures if local API is down
-            });
-        }
-      } catch (e) {
-        console.error('Supabase fetch error:', e);
-      }
-    }
-
-    loadQueueData();
-  }, []);
-
-  const handleWalkInSubmit = async (patient: any) => {
-    try {
-      const res = await fetch('http://localhost:4000/v1/queues/walk-in', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patient)
-      });
-      const newEntry = await res.json();
-      setQueue([...queue, newEntry]);
-      setMetrics(prev => ({
-        ...prev,
-        activeWaitingQueue: prev.activeWaitingQueue + 1,
-        totalAppointments: prev.totalAppointments + 1,
-      }));
-    } catch {
-      // Local optimistic update if API unavailable
-      const newEntry = {
-        id: Math.random().toString(),
-        token: `A-${Math.floor(Math.random() * 100) + 20}`,
-        ...patient
-      };
-      setQueue(prev => [...prev, newEntry]);
-      setMetrics(prev => ({
-        ...prev,
-        activeWaitingQueue: prev.activeWaitingQueue + 1,
-        totalAppointments: prev.totalAppointments + 1,
-      }));
-    }
-  };
-
-  const handleAppointmentSubmit = (patient: any) => {
-    alert(`Appointment successfully booked for ${patient.patientName} on ${patient.date}`);
-    setMetrics(prev => ({ ...prev, totalAppointments: prev.totalAppointments + 1 }));
-  };
-
-  const handleCallPatient = async (id: string) => {
-    try {
-      await fetch(`http://localhost:4000/v1/queues/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'in_consultation' })
-      });
-    } catch {
-      // Ignore network errors
-    } finally {
-      setQueue(prevQueue => prevQueue.map(item => {
-        if (item.id === id) {
-          return {
-            ...item,
-            queueStatus: 'warning',
-            queueStatusLabel: 'In Consultation',
-          };
-        }
-        return item;
-      }));
-    }
-  };
-
-  const filteredQueue = queue.filter(item => 
-    (item.patientName || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (item.mrnPhone || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (item.token || '').toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredQueue = queue.filter(
+    (q) =>
+      q.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.token.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.mrnPhone.includes(searchQuery)
   );
 
+  const handleStartConsultation = (patient: QueuePatient) => {
+    callPatient(patient.id);
+    setSelectedPatientForSummary(null);
+    router.push(`/consultation/${patient.id}`);
+  };
+
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+    <div className="space-y-6">
+      {/* Doctor Header Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white p-6 rounded-3xl shadow-md flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px', margin: '0 0 4px 0' }}>
-            Reception and Live Patient Queue
+          <span className="text-[10px] font-extrabold uppercase tracking-widest bg-sky-500/20 text-sky-300 border border-sky-400/30 px-3 py-1 rounded-full mb-2 inline-block">
+            {doctor.currentBranch} • Active Chamber Session
+          </span>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {doctor.name}
           </h1>
-          <p style={{ fontSize: '14px', color: '#64748B', margin: 0 }}>
-            Manage walk-in registrations, digital check-ins, consultation queues, and e-prescriptions.
+          <p className="text-xs text-sky-200 mt-1">
+            {doctor.specialty} • {doctor.regNumber}
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <Button variant="outline" onClick={() => setCarePassOpen(true)}>💳 CarePass QR</Button>
-          <Button variant="outline" onClick={() => setPrescriptionOpen(true)}>📝 Issue Rx</Button>
-          <Button variant="outline" onClick={() => setDiagnosticOpen(true)}>+ Lab Order</Button>
-          <Button variant="outline" onClick={() => setBillingOpen(true)}>+ Invoice</Button>
-          <Button variant="outline" onClick={() => setWalkInOpen(true)}>+ Walk-in</Button>
-          <Button variant="primary" onClick={() => setAppointmentOpen(true)}>+ Appointment</Button>
+        {inConsultationPatient ? (
+          <div className="bg-amber-500/20 border border-amber-400/40 p-3.5 rounded-2xl text-center sm:text-right shrink-0">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 block">Current Patient In Chamber</span>
+            <span className="text-base font-black text-white">{inConsultationPatient.patientName} ({inConsultationPatient.token})</span>
+            <button
+              onClick={() => router.push(`/consultation/${inConsultationPatient.id}`)}
+              className="mt-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-sm transition block w-full sm:w-auto"
+            >
+              Resume Consultation →
+            </button>
+          </div>
+        ) : (
+          <div className="bg-emerald-500/20 border border-emerald-400/40 p-3.5 rounded-2xl text-center shrink-0">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">Chamber Status</span>
+            <span className="text-sm font-bold text-white block">Ready for Next Patient</span>
+          </div>
+        )}
+      </div>
+
+      {/* Metrics Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block">Today&apos;s Patients</span>
+          <span className="text-2xl font-black text-gray-900 mt-1 block">{queue.length}</span>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] text-sky-600 uppercase font-bold tracking-wider block">Waiting in Chamber</span>
+          <span className="text-2xl font-black text-sky-600 mt-1 block">{activeWaitingQueue}</span>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider block">Consulted Today</span>
+          <span className="text-2xl font-black text-emerald-600 mt-1 block">{completedCount}</span>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-[10px] text-amber-600 uppercase font-bold tracking-wider block">Pending Reports</span>
+          <span className="text-2xl font-black text-amber-600 mt-1 block">{pendingReportCount}</span>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        <Card>
-          <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>{"Today's Total Appointments"}</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', marginTop: '4px' }}>
-            {metrics.totalAppointments}
+      {/* Chamber Queue Table */}
+      <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-xs">
+        <div className="p-5 border-b border-gray-200 bg-gray-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-bold text-gray-900">
+              Chamber Consultation Queue ({doctor.currentBranch})
+            </h2>
+            <p className="text-xs text-gray-500">
+              Click patient row to view clinical summary or launch consultation workspace.
+            </p>
           </div>
-        </Card>
 
-        <Card>
-          <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>Active Waiting Queue</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#0369A1', marginTop: '4px' }}>
-            {metrics.activeWaitingQueue}
-          </div>
-        </Card>
-
-        <Card>
-          <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>Completed Consultations</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#166534', marginTop: '4px' }}>
-            {metrics.completedConsultations}
-          </div>
-        </Card>
-
-        <Card>
-          <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>CarePass Eligibility Verified</span>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#92400E', marginTop: '4px' }}>
-            {metrics.carePassVerified}
-          </div>
-        </Card>
-      </div>
-
-      <Card style={{ marginBottom: '24px', padding: '16px' }}>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <div style={{ flex: 1 }}>
-            <Input 
-              placeholder="Search patient by Name, Phone, MRN, or Queue Token..." 
+          <div className="relative w-full sm:w-64">
+            <SearchIcon size={16} className="absolute left-3 top-2.5 text-gray-400" />
+            <input
+              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search token, name, phone..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
-          <Button variant="secondary">Filter Doctor</Button>
-        </div>
-      </Card>
-
-      <Card style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', fontWeight: 600, fontSize: '14px', color: '#334155' }}>
-          Active Chamber Queue - Cardiology (Dr. Arman Hossain)
         </div>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid #E2E8F0', color: '#64748B', fontSize: '12px', textTransform: 'uppercase' }}>
-              <th style={{ padding: '12px 20px' }}>Token</th>
-              <th style={{ padding: '12px 20px' }}>Patient Name</th>
-              <th style={{ padding: '12px 20px' }}>MRN / Phone</th>
-              <th style={{ padding: '12px 20px' }}>CarePass</th>
-              <th style={{ padding: '12px 20px' }}>Status</th>
-              <th style={{ padding: '12px 20px', textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredQueue.map((item) => (
-              <tr key={item.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                <td style={{ padding: '14px 20px', fontWeight: 700, color: '#0369A1' }}>{item.token}</td>
-                <td style={{ padding: '14px 20px', fontWeight: 600, color: '#0F172A' }}>{item.patientName}</td>
-                <td style={{ padding: '14px 20px', color: '#64748B' }}>{item.mrnPhone}</td>
-                <td style={{ padding: '14px 20px' }}>
-                  <StatusBadge status={item.carePassStatus as any} label={item.carePassLabel} />
-                </td>
-                <td style={{ padding: '14px 20px' }}>
-                  <StatusBadge status={item.queueStatus as any} label={item.queueStatusLabel} />
-                </td>
-                <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                  {item.queueStatusLabel !== 'In Consultation' ? (
-                    <Button size="sm" variant="primary" onClick={() => handleCallPatient(item.id)}>
-                      Call Patient
-                    </Button>
-                  ) : (
-                    <Button size="sm" variant="ghost" disabled>
-                      Calling...
-                    </Button>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {filteredQueue.length === 0 && (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-gray-100/70 text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-gray-200">
               <tr>
-                <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#64748B' }}>
-                  No patients found matching your search.
-                </td>
+                <th className="p-3.5 pl-5">Token</th>
+                <th className="p-3.5">Patient Name</th>
+                <th className="p-3.5">Age/Gender</th>
+                <th className="p-3.5">CarePass</th>
+                <th className="p-3.5">Status</th>
+                <th className="p-3.5 pr-5 text-right">Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </Card>
-      
-      <WalkInModal isOpen={isWalkInOpen} onClose={() => setWalkInOpen(false)} onSubmit={handleWalkInSubmit} />
-      <AppointmentModal isOpen={isAppointmentOpen} onClose={() => setAppointmentOpen(false)} onSubmit={handleAppointmentSubmit} />
-      <BillingModal isOpen={isBillingOpen} onClose={() => setBillingOpen(false)} onSubmit={(data) => alert(`Invoice ${data.invoiceNumber} generated! Total: BDT ${data.total}`)} patientName={selectedPatient} />
-      <DiagnosticOrderModal isOpen={isDiagnosticOpen} onClose={() => setDiagnosticOpen(false)} onSubmit={(data) => alert(`Diagnostic order ${data.orderId} placed for ${data.patientName}`)} />
-      <CarePassCardModal isOpen={isCarePassOpen} onClose={() => setCarePassOpen(false)} />
-      <PrescriptionModal isOpen={isPrescriptionOpen} onClose={() => setPrescriptionOpen(false)} />
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filteredQueue.map((item) => (
+                <tr key={item.id} className="hover:bg-sky-50/50 transition">
+                  <td className="p-3.5 pl-5 font-black text-sky-800 text-sm">{item.token}</td>
+                  <td className="p-3.5">
+                    <button
+                      onClick={() => setSelectedPatientForSummary(item)}
+                      className="font-bold text-gray-900 hover:text-sky-700 text-left hover:underline"
+                    >
+                      {item.patientName}
+                    </button>
+                    <span className="block text-[11px] text-gray-500 truncate max-w-xs">{item.chiefComplaint}</span>
+                  </td>
+                  <td className="p-3.5 text-gray-700 font-medium">{item.age} Yrs • {item.gender}</td>
+                  <td className="p-3.5">
+                    <span className="bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded text-[10px]">
+                      {item.carePassLabel}
+                    </span>
+                  </td>
+                  <td className="p-3.5">
+                    <span className={`font-extrabold px-2.5 py-1 rounded-full text-[10px] ${
+                      item.queueStatus === 'in_consultation'
+                        ? 'bg-amber-100 text-amber-800 animate-pulse'
+                        : item.queueStatus === 'completed'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-sky-100 text-sky-800'
+                    }`}>
+                      {item.queueStatusLabel}
+                    </span>
+                  </td>
+                  <td className="p-3.5 pr-5 text-right space-x-2">
+                    <button
+                      onClick={() => setSelectedPatientForSummary(item)}
+                      className="px-3 py-1.5 rounded-xl border border-gray-300 font-bold text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      Summary
+                    </button>
+                    {item.queueStatus !== 'completed' && (
+                      <button
+                        onClick={() => handleStartConsultation(item)}
+                        className="px-3.5 py-1.5 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold transition shadow-xs"
+                      >
+                        {item.queueStatus === 'in_consultation' ? 'Consultation' : 'Call & Start'}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Patient Clinical Summary Modal */}
+      {selectedPatientForSummary && (
+        <PatientSummaryModal
+          patient={selectedPatientForSummary}
+          onClose={() => setSelectedPatientForSummary(null)}
+          onStartConsultation={handleStartConsultation}
+        />
+      )}
     </div>
   );
 }
