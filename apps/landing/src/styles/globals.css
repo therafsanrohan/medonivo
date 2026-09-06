@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary-blue: #2563EB;
+  --color-secondary-cyan: #06B6D4;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-background: #F8FAFC;
+  --color-mainText: #0F172A;
+  --color-mutedText: #475569;
+}
 @layer base {
   :root {
     --background: #F8FAFC;

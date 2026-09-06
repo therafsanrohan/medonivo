@@ -37,19 +37,19 @@ export function Header() {
         </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Full-Screen Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute w-full left-0 top-[100%] border-t border-white/40 bg-white/95 backdrop-blur-3xl shadow-lg pb-4">
-          <nav className="flex flex-col space-y-4 p-6 text-sm font-medium">
-            <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)}>How It Works</a>
-            <a href="#careloop" onClick={() => setIsMobileMenuOpen(false)}>CareLoop</a>
-            <a href="#features" onClick={() => setIsMobileMenuOpen(false)}>Features</a>
-            <a href="#doctors" onClick={() => setIsMobileMenuOpen(false)}>For Doctors</a>
-            <a href="#organizations" onClick={() => setIsMobileMenuOpen(false)}>For Organizations</a>
-            <a href="#faq" onClick={() => setIsMobileMenuOpen(false)}>FAQ</a>
-            <hr className="border-gray-200/50" />
-            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
-            <Link to="/demo" className="text-primary-blue font-semibold" onClick={() => setIsMobileMenuOpen(false)}>Try Demo</Link>
+        <div className="md:hidden fixed inset-0 top-16 z-40 bg-white/95 backdrop-blur-3xl shadow-lg h-[calc(100vh-4rem)] flex flex-col justify-between">
+          <nav className="flex flex-col space-y-6 p-8 text-lg font-medium text-mainText flex-grow justify-center">
+            <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary-blue transition-colors">How It Works</a>
+            <a href="#careloop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary-blue transition-colors">CareLoop</a>
+            <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary-blue transition-colors">Features</a>
+            <a href="#doctors" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary-blue transition-colors">For Doctors</a>
+            <a href="#organizations" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary-blue transition-colors">For Organizations</a>
+            <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary-blue transition-colors">FAQ</a>
+            <hr className="border-gray-200/50 my-4" />
+            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary-blue transition-colors">Sign In</Link>
+            <Link to="/demo" className="text-white bg-primary-blue py-3 rounded-full text-center hover:bg-blue-600 transition-colors mt-4 shadow-lg shadow-primary-blue/30" onClick={() => setIsMobileMenuOpen(false)}>Try Demo</Link>
           </nav>
         </div>
       )}

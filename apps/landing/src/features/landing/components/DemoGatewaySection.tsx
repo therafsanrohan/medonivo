@@ -5,12 +5,14 @@ import { motion } from 'framer-motion';
 
 export function DemoGatewaySection() {
   const CARE_URL = import.meta.env.VITE_CARE_APP_URL || 'http://localhost:3000';
+  const WORKSPACE_URL = import.meta.env.VITE_WORKSPACE_APP_URL || 'http://localhost:3001';
+  const CONTROL_URL = import.meta.env.VITE_CONTROL_APP_URL || 'http://localhost:3002';
 
   const roles = [
     { name: 'Patient Demo', icon: User, color: 'bg-primary-blue', route: CARE_URL, isExternal: true },
-    { name: 'Doctor Demo', icon: Stethoscope, color: 'bg-teal-600', route: '/demo?role=doctor', isExternal: false },
-    { name: 'Medical Organization Demo', icon: Building2, color: 'bg-indigo-600', route: '/demo?role=org', isExternal: false },
-    { name: 'Admin Demo', icon: ShieldEllipsis, color: 'bg-gray-800', route: '/demo?role=admin', isExternal: false },
+    { name: 'Doctor Demo', icon: Stethoscope, color: 'bg-teal-600', route: WORKSPACE_URL, isExternal: true },
+    { name: 'Medical Organization Demo', icon: Building2, color: 'bg-indigo-600', route: CONTROL_URL, isExternal: true },
+    { name: 'Admin Demo', icon: ShieldEllipsis, color: 'bg-gray-800', route: CONTROL_URL, isExternal: true },
   ];
 
   return (
