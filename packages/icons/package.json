@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "license": "Proprietary",
-  "main": "./dist/index.js",
+  "main": "./src/index.tsx",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc --build",
+    "build": "pnpm exec tsc --build",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "lucide-react": "^1.31.0",
     "react": "^18.2.0"
   },
   "devDependencies": {
