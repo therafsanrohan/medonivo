@@ -4,9 +4,9 @@ import { Play, User, Stethoscope, Building2, ShieldEllipsis } from 'lucide-react
 import { motion } from 'framer-motion';
 
 export function DemoGatewaySection() {
-  const CARE_URL = import.meta.env.VITE_CARE_APP_URL || 'http://localhost:3000';
-  const WORKSPACE_URL = import.meta.env.VITE_WORKSPACE_APP_URL || 'http://localhost:3001';
-  const CONTROL_URL = import.meta.env.VITE_CONTROL_APP_URL || 'http://localhost:3002';
+  const CARE_URL = import.meta.env.VITE_CARE_APP_URL || 'https://care-phi-liart.vercel.app';
+  const WORKSPACE_URL = import.meta.env.VITE_WORKSPACE_APP_URL || 'https://workspace-xi-tan-13.vercel.app';
+  const CONTROL_URL = import.meta.env.VITE_CONTROL_APP_URL || 'https://control-zeta-one.vercel.app';
 
   const roles = [
     { name: 'Patient Demo', icon: User, color: 'bg-primary-blue', route: CARE_URL, isExternal: true },
