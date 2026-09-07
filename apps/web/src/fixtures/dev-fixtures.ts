@@ -1,47 +1,35 @@
-export interface WorkspaceQueueItemFixture {
+export interface CareUserFixture {
+  name: string;
+  carePassPlan: string;
+  includedConsultations: number;
+  diagnosticDiscountPercent: number;
+}
+
+export interface UpcomingAppointmentFixture {
   id: string;
-  token: string;
-  patientName: string;
-  mrnPhone: string;
-  carePassStatus: 'success' | 'warning' | 'neutral' | 'info';
-  carePassLabel: string;
-  queueStatus: 'warning' | 'info' | 'success';
-  queueStatusLabel: string;
+  doctorName: string;
+  specialty: string;
+  branchName: string;
+  queueToken: string;
+  appointmentTime: string;
+  estimatedWaitMinutes: number;
 }
 
-export interface WorkspaceMetricsFixture {
-  totalAppointments: number;
-  activeWaitingQueue: number;
-  completedConsultations: number;
-  carePassVerified: number;
-}
-
-export const mockWorkspaceMetrics: WorkspaceMetricsFixture = {
-  totalAppointments: 48,
-  activeWaitingQueue: 12,
-  completedConsultations: 29,
-  carePassVerified: 18
+export const mockCareUser: CareUserFixture = {
+  name: 'Patient Family',
+  carePassPlan: 'CarePass Active (Silver)',
+  includedConsultations: 2,
+  diagnosticDiscountPercent: 15
 };
 
-export const mockQueueList: WorkspaceQueueItemFixture[] = [
+export const mockUpcomingAppointments: UpcomingAppointmentFixture[] = [
   {
-    id: 'q_1',
-    token: 'A-14',
-    patientName: 'Rafsan Hasan',
-    mrnPhone: 'MRN-90218 - +8801700...',
-    carePassStatus: 'success',
-    carePassLabel: 'Active (Silver)',
-    queueStatus: 'warning',
-    queueStatusLabel: 'Waiting in Chamber'
-  },
-  {
-    id: 'q_2',
-    token: 'A-15',
-    patientName: 'Sultana Parveen',
-    mrnPhone: 'MRN-90219 - +8801800...',
-    carePassStatus: 'neutral',
-    carePassLabel: 'Non-Member',
-    queueStatus: 'info',
-    queueStatusLabel: 'Checked In'
+    id: 'apt_101',
+    doctorName: 'Dr. Arman Hossain',
+    specialty: 'Cardiology',
+    branchName: 'Central Dhaka Branch',
+    queueToken: 'A-14',
+    appointmentTime: 'Today at 04:30 PM',
+    estimatedWaitMinutes: 15
   }
 ];
